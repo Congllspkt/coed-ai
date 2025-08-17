@@ -1,0 +1,4 @@
+create html file to compare jdk, jvm, jre include examples
+have button navigate to index,html
+
+also update menu in index.html

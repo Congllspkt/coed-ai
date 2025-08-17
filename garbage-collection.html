@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Garbage Collection in Java</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Garbage Collection in Java</h1>
+    </header>
+    <main>
+        <section>
+            <h2>What is Garbage Collection?</h2>
+            <p>Garbage Collection (GC) in Java is a process by which the JVM automatically removes unused objects from memory to free up space and improve performance.</p>
+        </section>
+        <section>
+            <h2>Example of Garbage Collection in Java</h2>
+            <pre><code>// Example of Garbage Collection
+public class GarbageCollectionExample {
+    public static void main(String[] args) {
+        GarbageCollectionExample obj = new GarbageCollectionExample();
+        obj = null; // Eligible for Garbage Collection
+
+        System.gc(); // Requesting Garbage Collection
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        System.out.println("Garbage Collected");
+    }
+}</code></pre>
+        </section>
+        <button onclick="location.href='index.html'">Go to Index</button>
+    </main>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Topics</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <h1>Java Topics</h1>
+        <p>Learn about JDK, JVM, JRE, and Primitive Variables</p>
+    </header>
+
+    <nav class="menu">
+        <input type="text" id="searchBar" placeholder="Search topics..." onkeyup="filterLinks()">
+        <ul style="list-style-type: none;">
+            <li><a href="jdk.html">JDK</a></li><br>
+            <li><a href="jvm.html">JVM</a></li><br>
+            <li><a href="jre.html">JRE</a></li><br>
+            <li><a href="primitive.html">Primitive Variables</a></li><br>
+            <li><a href="jdk-jvm-jre-comparison.html">JDK, JVM, JRE Comparison</a></li><br>
+            <li><a href="boxing-unboxing.html">Boxing and Unboxing</a></li><br>
+            <li><a href="stack.html">Stack in Java</a></li><br>
+            <li><a href="heap.html">Heap in Java</a></li><br>
+            <li><a href="string.html">String in Java</a></li><br>
+            <li><a href="string-pool.html">String Pool in Java</a></li><br>
+            <li><a href="memory.html">Memory in Java</a></li><br>
+            <li><a href="garbage-collection.html">Garbage Collection in Java</a></li><br>
+            <li><a href="collection.html">Collection in Java</a></li><br>
+            <li><a href="map-hashmap.html">Map and HashMap in Java</a></li><br>
+            <li><a href="modifiers.html">Access Modifiers in Java</a></li><br>
+            <li><a href="object-class-interface.html">Object, Class, Interface, and @Interface in Java</a></li><br>
+            <li><a href="oop.html">Object-Oriented Programming in Java</a></li><br>
+            <li><a href="stream-api.html">Stream API in Java</a></li><br>
+            <li><a href="thread.html">Thread in Java</a></li><br>
+            <li><a href="spring.html">Spring Framework in Java</a></li><br>
+            <li><a href="spring-boot.html">Spring Boot in Java</a></li><br>
+            <li><a href="bean-annotation.html">@Bean Annotation in Spring</a></li><br>
+            <li><a href="scope-annotation.html">@Scope Annotation in Spring</a></li><br>
+            <li><a href="restcontroller-annotations.html">@RestController Annotations in Spring</a></li><br>
+        </ul>
+        <style>
+            .menu ul li {
+                margin-bottom: 5px; /* Add spacing between links */
+            }
+        </style>
+    </nav>
+
+    <script>
+        function filterLinks() {
+            const input = document.getElementById('searchBar');
+            const filter = input.value.toLowerCase();
+            const ul = document.querySelector('.menu ul');
+            const links = ul.getElementsByTagName('li');
+
+            for (let i = 0; i < links.length; i++) {
+                const a = links[i].getElementsByTagName('a')[0];
+                if (a.innerHTML.toLowerCase().indexOf(filter) > -1) {
+                    links[i].style.display = "";
+                } else {
+                    links[i].style.display = "none";
+                }
+            }
+        }
+    </script>
+
+    <footer class="footer">
+        <p>&copy; 2025 Java Learning Hub. All rights reserved.</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Object, Class, Interface, and @Interface in Java</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Object, Class, Interface, and @Interface in Java</h1>
+    </header>
+    <main>
+        <section>
+            <h2>Object</h2>
+            <p>In Java, an object is an instance of a class. It contains state (fields) and behavior (methods).</p>
+        </section>
+        <section>
+            <h2>Class</h2>
+            <p>A class is a blueprint for creating objects. It defines fields and methods that the objects of the class will have.</p>
+        </section>
+        <section>
+            <h2>Interface</h2>
+            <p>An interface in Java is a reference type that contains abstract methods. It is used to achieve abstraction and multiple inheritance.</p>
+        </section>
+        <section>
+            <h2>@Interface</h2>
+            <p>@Interface is used to define custom annotations in Java. It is a special kind of interface.</p>
+        </section>
+        <section>
+            <h2>Example</h2>
+            <pre><code>// Example of Object, Class, Interface, and @Interface
+interface MyInterface {
+    void display();
+}
+
+class MyClass implements MyInterface {
+    private String name;
+
+    MyClass(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public void display() {
+        System.out.println("Name: " + name);
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        MyClass obj = new MyClass("Example");
+        obj.display();
+    }
+}</code></pre>
+        </section>
+        <button onclick="location.href='index.html'">Go to Index</button>
+    </main>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@Bean Annotation in Spring</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>@Bean Annotation in Spring</h1>
+    </header>
+    <main>
+        <section>
+            <h2>What is @Bean Annotation?</h2>
+            <p>The <code>@Bean</code> annotation in Spring is used to define a bean in the Spring application context. It is typically used in configuration classes to declare and initialize beans.</p>
+        </section>
+        <section>
+            <h2>Example of @Bean Annotation</h2>
+            <pre><code>// Example of @Bean Annotation in Spring
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class AppConfig {
+
+    @Bean
+    public MyService myService() {
+        return new MyService();
+    }
+}
+
+class MyService {
+    public void serve() {
+        System.out.println("Service is running...");
+    }
+}
+
+// Main Application
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+public class BeanAnnotationExample {
+    public static void main(String[] args) {
+        ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+        MyService myService = context.getBean(MyService.class);
+        myService.serve();
+    }
+}</code></pre>
+        </section>
+        <button onclick="location.href='index.html'">Go to Index</button>
+    </main>
+</body>
+</html>

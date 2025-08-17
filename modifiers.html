@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Access Modifiers in Java</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Access Modifiers in Java</h1>
+    </header>
+    <main>
+        <section>
+            <h2>Access Modifiers</h2>
+            <p>Access modifiers in Java determine the scope and visibility of a class, method, or variable. The main access modifiers are:</p>
+            <ul>
+                <li><strong>private</strong>: Accessible only within the same class.</li>
+                <li><strong>default</strong>: Accessible within the same package.</li>
+                <li><strong>protected</strong>: Accessible within the same package and subclasses.</li>
+                <li><strong>public</strong>: Accessible from anywhere.</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Other Modifiers</h2>
+            <ul>
+                <li><strong>static</strong>: Belongs to the class rather than an instance.</li>
+                <li><strong>final</strong>: Prevents modification of a variable, method, or class.</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Example of Modifiers in Java</h2>
+            <pre><code>// Example of Modifiers in Java
+public class ModifiersExample {
+    private int privateVar = 10;
+    protected int protectedVar = 20;
+    public int publicVar = 30;
+    static int staticVar = 40;
+    final int finalVar = 50;
+
+    public static void main(String[] args) {
+        ModifiersExample obj = new ModifiersExample();
+        System.out.println("Private: " + obj.privateVar);
+        System.out.println("Protected: " + obj.protectedVar);
+        System.out.println("Public: " + obj.publicVar);
+        System.out.println("Static: " + staticVar);
+        System.out.println("Final: " + obj.finalVar);
+    }
+}</code></pre>
+        </section>
+        <button onclick="location.href='index.html'">Go to Index</button>
+    </main>
+</body>
+</html>

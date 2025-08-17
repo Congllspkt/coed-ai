@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@Scope Annotation in Spring</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>@Scope Annotation in Spring</h1>
+    </header>
+    <main>
+        <section>
+            <h2>What is @Scope Annotation?</h2>
+            <p>The <code>@Scope</code> annotation in Spring is used to define the scope of a bean. It determines the lifecycle and visibility of a bean in the Spring container.</p>
+        </section>
+        <section>
+            <h2>Common Scopes in Spring</h2>
+            <ul>
+                <li><strong>singleton</strong>: A single instance of the bean is created and shared across the application.</li>
+                <li><strong>prototype</strong>: A new instance of the bean is created every time it is requested.</li>
+                <li><strong>request</strong>: A new instance is created for each HTTP request (used in web applications).</li>
+                <li><strong>session</strong>: A new instance is created for each HTTP session (used in web applications).</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Example of @Scope Annotation</h2>
+            <pre><code>// Example of @Scope Annotation in Spring
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
+
+@Configuration
+public class AppConfig {
+
+    @Bean
+    @Scope("prototype")
+    public MyBean myBean() {
+        return new MyBean();
+    }
+}
+
+class MyBean {
+    public void serve() {
+        System.out.println("New instance of MyBean created!");
+    }
+}
+
+// Main Application
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+public class ScopeAnnotationExample {
+    public static void main(String[] args) {
+        ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+        MyBean bean1 = context.getBean(MyBean.class);
+        MyBean bean2 = context.getBean(MyBean.class);
+
+        System.out.println(bean1 == bean2 ? "Same instance" : "Different instances");
+    }
+}</code></pre>
+        </section>
+        <button onclick="location.href='index.html'">Go to Index</button>
+    </main>
+</body>
+</html>

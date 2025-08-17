@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spring Boot in Java</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Spring Boot in Java</h1>
+    </header>
+    <main>
+        <section>
+            <h2>What is Spring Boot?</h2>
+            <p>Spring Boot is an extension of the Spring Framework that simplifies the development of stand-alone, production-ready Spring applications. It provides embedded servers, auto-configuration, and starter dependencies.</p>
+        </section>
+        <section>
+            <h2>Example of Spring Boot Application</h2>
+            <pre><code>// Example of Spring Boot Application
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@SpringBootApplication
+public class SpringBootExample {
+    public static void main(String[] args) {
+        SpringApplication.run(SpringBootExample.class, args);
+    }
+}
+
+@RestController
+class HelloController {
+    @GetMapping("/hello")
+    public String sayHello() {
+        return "Hello, Spring Boot!";
+    }
+}</code></pre>
+        </section>
+        <button onclick="location.href='index.html'">Go to Index</button>
+    </main>
+</body>
+</html>

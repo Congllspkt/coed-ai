@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@RestController Annotations in Spring</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>@RestController Annotations in Spring</h1>
+    </header>
+    <main>
+        <section>
+            <h2>What is @RestController?</h2>
+            <p>The <code>@RestController</code> annotation in Spring is a specialized version of the <code>@Controller</code> annotation. It is used to create RESTful web services and combines <code>@Controller</code> and <code>@ResponseBody</code>.</p>
+        </section>
+        <section>
+            <h2>Common Annotations Used with @RestController</h2>
+            <ul>
+                <li><strong>@GetMapping</strong>: Handles HTTP GET requests.</li>
+                <li><strong>@PostMapping</strong>: Handles HTTP POST requests.</li>
+                <li><strong>@PutMapping</strong>: Handles HTTP PUT requests.</li>
+                <li><strong>@DeleteMapping</strong>: Handles HTTP DELETE requests.</li>
+                <li><strong>@RequestMapping</strong>: General-purpose annotation for mapping HTTP requests to handler methods.</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Example of @RestController in Spring</h2>
+            <pre><code>// Example of @RestController in Spring
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+@SpringBootApplication
+public class RestControllerExample {
+    public static void main(String[] args) {
+        SpringApplication.run(RestControllerExample.class, args);
+    }
+}
+
+@RestController
+class MyController {
+
+    @GetMapping("/greet")
+    public String greet() {
+        return "Hello, World!";
+    }
+
+    @PostMapping("/echo")
+    public String echo(@RequestBody String message) {
+        return "You said: " + message;
+    }
+}</code></pre>
+        </section>
+        <button onclick="location.href='index.html'">Go to Index</button>
+    </main>
+</body>
+</html>
