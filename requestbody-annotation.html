@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@RequestBody Annotation in Spring Boot</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>@RequestBody Annotation in Spring Boot</h1>
+    </header>
+    <main>
+        <section>
+            <h2>What is @RequestBody?</h2>
+            <p>The <code>@RequestBody</code> annotation in Spring Boot is used to bind the HTTP request body to a Java object. It is commonly used in RESTful web services to handle incoming JSON or XML payloads.</p>
+        </section>
+        <section>
+            <h2>Example Usage</h2>
+            <pre><code class="language-java">@RestController
+public class UserController {
+
+    @PostMapping("/users")
+    public ResponseEntity&lt;String&gt; createUser(@RequestBody User user) {
+        // Process the user object
+        return ResponseEntity.ok("User created: " + user.getName());
+    }
+}</code></pre>
+            <p>In the above example, the <code>@RequestBody</code> annotation is used to map the incoming JSON payload to the <code>User</code> object.</p>
+        </section>
+        <section>
+            <h2>How it Works</h2>
+            <p>When a request is made to the endpoint, Spring automatically deserializes the request body into the specified Java object using the configured message converters (e.g., Jackson for JSON).</p>
+        </section>
+        <button onclick="location.href='index.html'">Back to Home</button>
+    </main>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@RequestParam Annotation in Spring Boot</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>@RequestParam Annotation in Spring Boot</h1>
+    </header>
+    <main>
+        <section>
+            <h2>What is @RequestParam?</h2>
+            <p>The <code>@RequestParam</code> annotation in Spring Boot is used to extract query parameters, form data, or any custom parameters from the URL of an HTTP request and bind them to method parameters in a controller.</p>
+        </section>
+        <section>
+            <h2>Example Usage</h2>
+            <pre><code class="language-java">@RestController
+public class UserController {
+
+    @GetMapping("/users")
+    public ResponseEntity&lt;String&gt; getUserById(@RequestParam String id) {
+        // Process the id parameter
+        return ResponseEntity.ok("User ID: " + id);
+    }
+}</code></pre>
+            <p>In the above example, the <code>@RequestParam</code> annotation is used to bind the <code>id</code> query parameter from the URL to the method parameter.</p>
+        </section>
+        <section>
+            <h2>How it Works</h2>
+            <p>When a request is made to the endpoint, Spring automatically maps the query parameter in the URL to the method parameter annotated with <code>@RequestParam</code>. If the parameter is not provided, a default value can be specified or an exception will be thrown if the parameter is required.</p>
+        </section>
+        <button onclick="location.href='index.html'">Back to Home</button>
+    </main>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Life Cycle and Its Components</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Java Life Cycle and Its Components</h1>
+    <p>The Java life cycle involves several stages that a Java program goes through from writing the code to execution. These stages include:</p>
+    <ul>
+        <li><strong>Writing the Code:</strong> The programmer writes the Java code in a text editor or an Integrated Development Environment (IDE).</li>
+        <li><strong>Compilation:</strong> The Java compiler (javac) converts the source code into bytecode.</li>
+        <li><strong>Class Loading:</strong> The Java ClassLoader loads the bytecode into the JVM.</li>
+        <li><strong>Bytecode Verification:</strong> The JVM verifies the bytecode for security and correctness.</li>
+        <li><strong>Execution:</strong> The JVM interprets or compiles the bytecode into machine code and executes it.</li>
+    </ul>
+
+    <h2>Examples</h2>
+
+    <h3>Compilation and Execution</h3>
+    <pre><code class="language-java">
+// Save this file as HelloWorld.java
+public class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Hello, World!");
+    }
+}
+
+// Compilation
+// Run the following command in the terminal:
+// javac HelloWorld.java
+
+// Execution
+// Run the following command in the terminal:
+// java HelloWorld
+    </code></pre>
+
+    <h3>Class Loading and Execution</h3>
+    <pre><code class="language-java">
+public class ClassLoadingExample {
+    static {
+        System.out.println("Class is being loaded");
+    }
+
+    public static void main(String[] args) {
+        System.out.println("Class is being executed");
+    }
+}
+
+// Output:
+// Class is being loaded
+// Class is being executed
+    </code></pre>
+
+    <button onclick="location.href='index.html'">Back to Home</button>
+</body>
+</html>

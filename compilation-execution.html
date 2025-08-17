@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compilation & Execution in Java</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Compilation & Execution in Java</h1>
+    </header>
+    <main>
+        <section>
+            <h2>What is Compilation & Execution?</h2>
+            <p>In Java, the process of running a program involves two main steps: compilation and execution. Compilation converts the source code into bytecode, while execution runs the bytecode on the Java Virtual Machine (JVM).</p>
+        </section>
+        <section>
+            <h2>Steps for Compilation & Execution</h2>
+            <h3>1. Compilation</h3>
+            <p>Use the <code>javac</code> command to compile a Java file:</p>
+            <pre><code>javac HelloWorld.java</code></pre>
+            <p>This generates a <code>HelloWorld.class</code> file containing the bytecode.</p>
+            <h3>2. Execution</h3>
+            <p>Use the <code>java</code> command to execute the compiled bytecode:</p>
+            <pre><code>java HelloWorld</code></pre>
+            <p>This runs the program on the JVM.</p>
+        </section>
+        <section>
+            <h2>Example Program</h2>
+            <pre><code class="language-java">public class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Hello, World!");
+    }
+}</code></pre>
+            <p>Save the above code in a file named <code>HelloWorld.java</code>, then compile and execute it using the steps mentioned above.</p>
+        </section>
+        <button onclick="location.href='index.html'">Back to Home</button>
+    </main>
+</body>
+</html>

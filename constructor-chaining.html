@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Constructor Chaining in Java</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Constructor Chaining in Java</h1>
+    <p>Constructor chaining in Java is the process of calling one constructor from another constructor within the same class or from a parent class. It helps in reusing the code and reducing redundancy.</p>
+
+    <h2>Examples</h2>
+
+    <h3>Example 1: Constructor Chaining within the Same Class</h3>
+    <pre><code class="language-java">
+public class Employee {
+    private String name;
+    private int age;
+
+    // Constructor with no arguments
+    public Employee() {
+        this("Unknown", 0); // Calls the constructor with two arguments
+    }
+
+    // Constructor with one argument
+    public Employee(String name) {
+        this(name, 0); // Calls the constructor with two arguments
+    }
+
+    // Constructor with two arguments
+    public Employee(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    public void displayInfo() {
+        System.out.println("Name: " + name + ", Age: " + age);
+    }
+
+    public static void main(String[] args) {
+        Employee emp1 = new Employee();
+        Employee emp2 = new Employee("Alice");
+        Employee emp3 = new Employee("Bob", 30);
+
+        emp1.displayInfo();
+        emp2.displayInfo();
+        emp3.displayInfo();
+    }
+}
+
+// Output:
+// Name: Unknown, Age: 0
+// Name: Alice, Age: 0
+// Name: Bob, Age: 30
+    </code></pre>
+
+    <h3>Example 2: Constructor Chaining with Parent Class</h3>
+    <pre><code class="language-java">
+class Person {
+    private String name;
+
+    // Constructor in parent class
+    public Person(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+}
+
+class Student extends Person {
+    private int grade;
+
+    // Constructor in child class
+    public Student(String name, int grade) {
+        super(name); // Calls the constructor of the parent class
+        this.grade = grade;
+    }
+
+    public void displayInfo() {
+        System.out.println("Name: " + getName() + ", Grade: " + grade);
+    }
+
+    public static void main(String[] args) {
+        Student student = new Student("Charlie", 10);
+        student.displayInfo();
+    }
+}
+
+// Output:
+// Name: Charlie, Grade: 10
+    </code></pre>
+
+    <button onclick="location.href='index.html'">Back to Home</button>
+</body>
+</html>

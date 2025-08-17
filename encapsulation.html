@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encapsulation in Java</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Encapsulation in Java</h1>
+
+    <p>Encapsulation is one of the fundamental principles of Object-Oriented Programming (OOP). It is the process of wrapping data (variables) and methods (functions) together as a single unit. In encapsulation, the variables of a class are hidden from other classes and can only be accessed through the methods of their current class. This is also known as data hiding.</p>
+
+    <h2>Example of Encapsulation</h2>
+    <pre><code class="language-java">
+class Employee {
+    // Private variables - data hiding
+    private String name;
+    private int age;
+
+    // Public getter and setter methods to access private variables
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        if (age > 0) {
+            this.age = age;
+        } else {
+            System.out.println("Age must be positive.");
+        }
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Employee emp = new Employee();
+        emp.setName("John");
+        emp.setAge(30);
+
+        System.out.println("Employee Name: " + emp.getName());
+        System.out.println("Employee Age: " + emp.getAge());
+    }
+}
+    </code></pre>
+
+    <p>In the above example, the `Employee` class encapsulates the `name` and `age` fields by making them private and providing public getter and setter methods to access and modify them. This ensures controlled access to the fields.</p>
+
+    <button onclick="location.href='index.html'">Back to Index</button>
+</body>
+</html>

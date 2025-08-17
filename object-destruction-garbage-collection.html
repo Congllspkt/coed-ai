@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Object Destruction and Garbage Collection in Java</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Object Destruction and Garbage Collection in Java</h1>
+    <p>In Java, memory management is handled automatically through garbage collection. The garbage collector identifies and removes objects that are no longer in use, freeing up memory for new objects.</p>
+
+    <h2>Garbage Collection</h2>
+    <p>Garbage collection is the process of reclaiming memory occupied by objects that are no longer reachable. It is performed automatically by the Java Virtual Machine (JVM).</p>
+
+    <h3>Key Points:</h3>
+    <ul>
+        <li>Garbage collection is automatic and does not require explicit invocation.</li>
+        <li>The <code>System.gc()</code> method can be used to suggest garbage collection, but it is not guaranteed.</li>
+        <li>Objects become eligible for garbage collection when they are no longer reachable.</li>
+    </ul>
+
+    <h2>Finalization</h2>
+    <p>Before an object is garbage collected, the JVM calls its <code>finalize()</code> method. This method can be overridden to perform cleanup tasks, but its use is discouraged in modern Java.</p>
+
+    <h2>Examples</h2>
+
+    <h3>Example 1: Garbage Collection</h3>
+    <pre><code class="language-java">
+public class GarbageCollectionExample {
+    public static void main(String[] args) {
+        GarbageCollectionExample obj = new GarbageCollectionExample();
+        obj = null; // Make the object eligible for garbage collection
+
+        // Suggest garbage collection
+        System.gc();
+
+        System.out.println("End of main method");
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        System.out.println("Garbage collector called");
+        System.out.println("Object is being garbage collected");
+    }
+}
+
+// Output (may vary):
+// Garbage collector called
+// Object is being garbage collected
+// End of main method
+    </code></pre>
+
+    <h3>Example 2: Objects Eligible for Garbage Collection</h3>
+    <pre><code class="language-java">
+public class EligibilityExample {
+    public static void main(String[] args) {
+        EligibilityExample obj1 = new EligibilityExample();
+        EligibilityExample obj2 = new EligibilityExample();
+
+        // Make obj1 eligible for garbage collection
+        obj1 = null;
+
+        // Make obj2 eligible for garbage collection
+        obj2 = obj1;
+
+        // Suggest garbage collection
+        System.gc();
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        System.out.println("Object is being garbage collected");
+    }
+}
+
+// Output (may vary):
+// Object is being garbage collected
+// Object is being garbage collected
+    </code></pre>
+
+    <button onclick="location.href='index.html'">Back to Home</button>
+</body>
+</html>

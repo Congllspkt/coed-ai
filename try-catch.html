@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Try/Catch in Java</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Try/Catch in Java</h1>
+    </header>
+    <main>
+        <section>
+            <h2>What is Try/Catch?</h2>
+            <p>The <code>try</code> and <code>catch</code> blocks in Java are used for exception handling. The <code>try</code> block contains code that might throw an exception, while the <code>catch</code> block handles the exception if it occurs.</p>
+        </section>
+        <section>
+            <h2>Example Usage</h2>
+            <pre><code class="language-java">public class ExceptionExample {
+    public static void main(String[] args) {
+        try {
+            int result = 10 / 0; // This will throw ArithmeticException
+        } catch (ArithmeticException e) {
+            System.out.println("Exception caught: " + e.getMessage());
+        }
+    }
+}</code></pre>
+            <p>In the above example, the <code>try</code> block contains code that may throw an <code>ArithmeticException</code>. The <code>catch</code> block handles the exception and prints an error message.</p>
+        </section>
+        <section>
+            <h2>How it Works</h2>
+            <p>When an exception occurs in the <code>try</code> block, the control is transferred to the corresponding <code>catch</code> block. If no exception occurs, the <code>catch</code> block is skipped.</p>
+        </section>
+        <button onclick="location.href='index.html'">Back to Home</button>
+    </main>
+</body>
+</html>

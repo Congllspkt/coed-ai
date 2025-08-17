@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heap Memory and Stack Memory in Java</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Heap Memory and Stack Memory in Java</h1>
+    <p>In Java, memory is divided into two main areas: Heap Memory and Stack Memory. Understanding these areas is crucial for efficient memory management and debugging.</p>
+
+    <h2>Heap Memory</h2>
+    <p>Heap memory is used for dynamic memory allocation. Objects and their instance variables are stored in the heap. It is shared among all threads.</p>
+
+    <h3>Key Points:</h3>
+    <ul>
+        <li>Used for objects and instance variables.</li>
+        <li>Garbage collection is performed to free unused memory.</li>
+        <li>Accessed globally by all threads.</li>
+    </ul>
+
+    <h2>Stack Memory</h2>
+    <p>Stack memory is used for method execution and local variables. Each thread has its own stack memory.</p>
+
+    <h3>Key Points:</h3>
+    <ul>
+        <li>Used for method calls and local variables.</li>
+        <li>Memory is automatically deallocated when a method ends.</li>
+        <li>Each thread has its own stack, making it thread-safe.</li>
+    </ul>
+
+    <h2>Examples</h2>
+
+    <h3>Example: Heap and Stack Memory Usage</h3>
+    <pre><code class="language-java">
+public class MemoryExample {
+    public static void main(String[] args) {
+        int localVariable = 10; // Stored in stack memory
+        Person person = new Person("Alice"); // Object stored in heap memory
+
+        System.out.println("Local Variable: " + localVariable);
+        System.out.println("Person Name: " + person.getName());
+    }
+}
+
+class Person {
+    private String name; // Instance variable stored in heap memory
+
+    public Person(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+}
+
+// Output:
+// Local Variable: 10
+// Person Name: Alice
+    </code></pre>
+
+    <h3>Example: Stack Memory for Method Calls</h3>
+    <pre><code class="language-java">
+public class StackExample {
+    public static void main(String[] args) {
+        firstMethod();
+    }
+
+    public static void firstMethod() {
+        secondMethod();
+    }
+
+    public static void secondMethod() {
+        System.out.println("Stack memory example");
+    }
+}
+
+// Output:
+// Stack memory example
+    </code></pre>
+
+    <button onclick="location.href='index.html'">Back to Home</button>
+</body>
+</html>

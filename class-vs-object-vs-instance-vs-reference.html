@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class vs Object vs Instance vs Reference</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Class vs Object vs Instance vs Reference in Java</h1>
+
+    <h2>Class</h2>
+    <p>A class is a blueprint or template for creating objects. It defines properties and behaviors that the objects created from the class will have.</p>
+    <pre><code class="language-java">
+class Car {
+    String brand;
+    int speed;
+
+    void drive() {
+        System.out.println("Driving " + brand);
+    }
+}
+    </code></pre>
+
+    <h2>Object</h2>
+    <p>An object is an instance of a class. It is a real-world entity that has state and behavior.</p>
+    <pre><code class="language-java">
+Car myCar = new Car();
+myCar.brand = "Toyota";
+myCar.speed = 120;
+myCar.drive();
+    </code></pre>
+
+    <h2>Instance</h2>
+    <p>An instance refers to the actual object created from a class. It occupies memory and has a unique identity.</p>
+    <pre><code class="language-java">
+Car anotherCar = new Car(); // another instance of the Car class
+anotherCar.brand = "Honda";
+anotherCar.speed = 100;
+anotherCar.drive();
+    </code></pre>
+
+    <h2>Reference</h2>
+    <p>A reference is a variable that holds the memory address of an object. It is used to access the object.</p>
+    <pre><code class="language-java">
+Car carReference = myCar; // carReference points to the same object as myCar
+carReference.drive();
+    </code></pre>
+
+    <button onclick="location.href='index.html'">Back to Index</button>
+</body>
+</html>

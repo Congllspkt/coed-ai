@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@Transactional Annotation in Spring Boot</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>@Transactional Annotation in Spring Boot</h1>
+    </header>
+    <main>
+        <section>
+            <h2>What is @Transactional?</h2>
+            <p>The <code>@Transactional</code> annotation in Spring Boot is used to manage transactions declaratively. It ensures that a series of operations are executed within a transaction, and if any operation fails, the entire transaction is rolled back.</p>
+        </section>
+        <section>
+            <h2>Example Usage</h2>
+            <pre><code class="language-java">@Service
+public class UserService {
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Transactional
+    public void createUser(User user) {
+        userRepository.save(user);
+        // Additional operations
+    }
+}</code></pre>
+            <p>In the above example, the <code>@Transactional</code> annotation ensures that all operations within the <code>createUser</code> method are executed within a single transaction.</p>
+        </section>
+        <section>
+            <h2>How it Works</h2>
+            <p>When a method annotated with <code>@Transactional</code> is called, Spring creates a transaction context. If any exception occurs during the execution of the method, the transaction is rolled back. Otherwise, the transaction is committed.</p>
+        </section>
+        <button onclick="location.href='index.html'">Back to Home</button>
+    </main>
+</body>
+</html>
