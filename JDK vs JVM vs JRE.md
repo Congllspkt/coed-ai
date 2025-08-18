@@ -39,15 +39,15 @@ The JVM is the **core execution engine** that runs Java bytecode. It's a virtual
 ┌─────────────────────────────────────────────────────────┐
 │                       JVM                               │
 ├─────────────────────────────────────────────────────────┤
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  │
-│  │ Class Loader │  │ Runtime Data │  │ Execution    │  │
-│  │ Subsystem    │  │ Area         │  │ Engine       │  │
-│  │              │  │              │  │              │  │
-│  │ • Bootstrap  │  │ • Method Area│  │ • Interpreter│  │
-│  │ • Extension  │  │ • Heap       │  │ • JIT        │  │
-│  │ • Application│  │ • Stack      │  │ • Garbage    │  │
-│  │              │  │ • PC Register│  │   Collector  │  │
-│  └──────────────┘  └──────────────┘  └──────────────┘  │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐   │
+│  │ Class Loader │  │ Runtime Data │  │ Execution    │   │
+│  │ Subsystem    │  │ Area         │  │ Engine       │   │
+│  │              │  │              │  │              │   │
+│  │ • Bootstrap  │  │ • Method Area│  │ • Interpreter│   │
+│  │ • Extension  │  │ • Heap       │  │ • JIT        │   │
+│  │ • Application│  │ • Stack      │  │ • Garbage    │   │
+│  │              │  │ • PC Register│  │   Collector  │   │
+│  └──────────────┘  └──────────────┘  └──────────────┘   │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -101,25 +101,25 @@ The JRE provides the **minimum environment** required to run Java applications. 
 ┌─────────────────────────────────────────────────────────┐
 │                       JRE                               │
 ├─────────────────────────────────────────────────────────┤
-│  ┌─────────────────────────────────────────────────┐   │
-│  │                    JVM                          │   │
-│  │  (Java Virtual Machine - Core Engine)          │   │
-│  └─────────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │                    JVM                          │    │
+│  │  (Java Virtual Machine - Core Engine)           │    │
+│  └─────────────────────────────────────────────────┘    │
 │                                                         │
-│  ┌─────────────────────────────────────────────────┐   │
-│  │              Standard Libraries                 │   │
-│  │  • rt.jar (Runtime Library)                    │   │
-│  │  • charsets.jar                                 │   │
-│  │  • jce.jar (Cryptography)                      │   │
-│  │  • jsse.jar (SSL/TLS)                          │   │
-│  └─────────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │              Standard Libraries                 │    │
+│  │  • rt.jar (Runtime Library)                     │    │
+│  │  • charsets.jar                                 │    │
+│  │  • jce.jar (Cryptography)                       │    │
+│  │  • jsse.jar (SSL/TLS)                           │    │
+│  └─────────────────────────────────────────────────┘    │
 │                                                         │
-│  ┌─────────────────────────────────────────────────┐   │
-│  │            Supporting Files                     │   │
-│  │  • Security policies                            │   │
-│  │  • Property files                               │   │
-│  │  • Native libraries                             │   │
-│  └─────────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │            Supporting Files                     │    │
+│  │  • Security policies                            │    │
+│  │  • Property files                               │    │
+│  │  • Native libraries                             │    │
+│  └─────────────────────────────────────────────────┘    │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -183,34 +183,34 @@ The JDK is the **complete development environment** for Java applications. It in
 ┌─────────────────────────────────────────────────────────┐
 │                       JDK                               │
 ├─────────────────────────────────────────────────────────┤
-│  ┌─────────────────────────────────────────────────┐   │
-│  │                    JRE                          │   │
-│  │  ┌─────────────────────────────────────────┐   │   │
-│  │  │               JVM                       │   │   │
-│  │  │  (Core execution engine)               │   │   │
-│  │  └─────────────────────────────────────────┘   │   │
-│  │  • Standard Libraries (rt.jar, etc.)           │   │
-│  │  • Supporting Files                             │   │
-│  └─────────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │                    JRE                          │    │
+│  │  ┌─────────────────────────────────────────┐    │    │
+│  │  │               JVM                       │    │    │
+│  │  │  (Core execution engine)                │    │    │
+│  │  └─────────────────────────────────────────┘    │    │
+│  │  • Standard Libraries (rt.jar, etc.)            │    │
+│  │  • Supporting Files                             │    │
+│  └─────────────────────────────────────────────────┘    │
 │                                                         │
-│  ┌─────────────────────────────────────────────────┐   │
-│  │            Development Tools                    │   │
-│  │  • javac    (Java Compiler)                    │   │
-│  │  • javadoc  (Documentation Generator)          │   │
-│  │  • jar      (Archive Tool)                     │   │
-│  │  • jdb      (Debugger)                         │   │
-│  │  • javap    (Disassembler)                     │   │
-│  │  • keytool  (Certificate Management)           │   │
-│  │  • jconsole (Monitoring Tool)                  │   │
-│  │  • jvisualvm(Profiling Tool)                   │   │
-│  └─────────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │            Development Tools                    │    │
+│  │  • javac    (Java Compiler)                     │    │
+│  │  • javadoc  (Documentation Generator)           │    │
+│  │  • jar      (Archive Tool)                      │    │
+│  │  • jdb      (Debugger)                          │    │
+│  │  • javap    (Disassembler)                      │    │
+│  │  • keytool  (Certificate Management)            │    │
+│  │  • jconsole (Monitoring Tool)                   │    │
+│  │  • jvisualvm(Profiling Tool)                    │    │
+│  └─────────────────────────────────────────────────┘    │
 │                                                         │
-│  ┌─────────────────────────────────────────────────┐   │
-│  │          Additional Libraries                   │   │
-│  │  • tools.jar                                    │   │
-│  │  • dt.jar                                       │   │
-│  │  • Development-specific libraries               │   │
-│  └─────────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │          Additional Libraries                   │    │
+│  │  • tools.jar                                    │    │
+│  │  • dt.jar                                       │    │
+│  │  • Development-specific libraries               │    │
+│  └─────────────────────────────────────────────────┘    │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -310,24 +310,24 @@ jconsole
 │   ┌─────────────────────────────────────────────────┐   │
 │   │                    JRE                          │   │
 │   │  (Java Runtime Environment)                     │   │
-│   │  ┌─────────────────────────────────────────┐   │   │
-│   │  │               JVM                       │   │   │
-│   │  │  (Java Virtual Machine)                │   │   │
-│   │  │                                         │   │   │
-│   │  │  • Bytecode Execution                   │   │   │
-│   │  │  • Memory Management                    │   │   │
-│   │  │  • Garbage Collection                   │   │   │
-│   │  │  • Thread Management                    │   │   │
-│   │  │  • Security Enforcement                 │   │   │
-│   │  └─────────────────────────────────────────┘   │   │
+│   │  ┌─────────────────────────────────────────┐    │   │
+│   │  │               JVM                       │    │   │
+│   │  │  (Java Virtual Machine)                 │    │   │
+│   │  │                                         │    │   │
+│   │  │  • Bytecode Execution                   │    │   │
+│   │  │  • Memory Management                    │    │   │
+│   │  │  • Garbage Collection                   │    │   │
+│   │  │  • Thread Management                    │    │   │
+│   │  │  • Security Enforcement                 │    │   │
+│   │  └─────────────────────────────────────────┘    │   │
 │   │                                                 │   │
-│   │  • Standard Libraries (java.*, javax.*)        │   │
-│   │  • Runtime Support Files                       │   │
-│   │  • Security Policies                           │   │
-│   │  • Configuration Files                         │   │
+│   │  • Standard Libraries (java.*, javax.*)         │   │
+│   │  • Runtime Support Files                        │   │
+│   │  • Security Policies                            │   │
+│   │  • Configuration Files                          │   │
 │   └─────────────────────────────────────────────────┘   │
 │                                                         │
-│   • Development Tools (javac, javadoc, jar, etc.)      │
+│   • Development Tools (javac, javadoc, jar, etc.)       │
 │   • Additional Development Libraries                    │
 │   • Sample Code and Documentation                       │
 │   • Source Code (in some distributions)                 │
