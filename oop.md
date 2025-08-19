@@ -1,604 +1,910 @@
 # Object-Oriented Programming (OOP) in Java
 
-## Introduction to OOP
+Object-Oriented Programming (OOP) is a programming paradigm that organizes software design around data, or objects, rather than functions and logic. Java is a quintessential object-oriented language, and understanding its OOP principles is fundamental to building robust, scalable, and maintainable applications.
 
-Object-Oriented Programming (OOP) is a programming paradigm that organizes software design around data, or objects, rather than functions and logic. It's a way of structuring programs into "objects" that combine data and behavior.
+## Core Concepts of OOP
 
-**Why OOP?**
-*   **Modularity:** Breaking down software into smaller, manageable modules (objects).
-*   **Reusability:** Objects or classes can be reused in different parts of the program or in different projects.
-*   **Maintainability:** Easier to debug, update, and manage complex codebases.
-*   **Extensibility:** New features can be added without affecting existing functionality.
-*   **Real-world Modeling:** OOP concepts often map well to real-world entities and their interactions.
-
-Java is a fundamentally object-oriented language, meaning almost everything you do in Java involves classes and objects.
-
-## Core Concepts of OOP in Java
-
-The four pillars of OOP are:
+OOP in Java revolves around four main pillars:
 
 1.  **Encapsulation**
 2.  **Inheritance**
 3.  **Polymorphism**
 4.  **Abstraction**
 
-Let's also start with the fundamental building blocks: **Classes and Objects**.
+Before diving into these, let's briefly understand **Classes and Objects**, which are the building blocks of OOP.
 
 ---
 
-### 1. Classes and Objects
+## 1. Classes and Objects
 
-At the heart of OOP are classes and objects.
+### What are they?
 
-*   **Class:** A blueprint or a template for creating objects. It defines the properties (data/attributes) and behaviors (methods) that objects of that type will have. A class itself does not occupy memory, it's just a definition.
-*   **Object:** An instance of a class. When a class is defined, no memory is allocated until an object of that class is created. An object is a real-world entity that has state and behavior.
+*   **Class:** A blueprint or a template for creating objects. It defines the common properties (attributes/fields) and behaviors (methods) that all objects of that type will have. Think of it like a cookie cutter.
+*   **Object:** An instance of a class. It's a real-world entity that has a state (values of its attributes) and behavior (what it can do). Think of it like a cookie made from the cutter.
 
-**Example:**
+### Example: Car Class and Objects
+
+Let's define a `Car` class with some attributes and behaviors.
 
 ```java
-// 1. Class Definition
+// Car.java
 class Car {
-    // Properties (Attributes/Data Members)
+    // Attributes (properties)
     String make;
     String model;
     int year;
     String color;
-    boolean isEngineOn;
+    double speed;
 
-    // Constructor (a special method to initialize objects)
+    // Constructor: A special method used to initialize objects
     public Car(String make, String model, int year, String color) {
         this.make = make;
         this.model = model;
         this.year = year;
         this.color = color;
-        this.isEngineOn = false; // Initial state
+        this.speed = 0.0; // Initial speed is 0
     }
 
-    // Behaviors (Methods)
-    public void startEngine() {
-        if (!isEngineOn) {
-            isEngineOn = true;
-            System.out.println(make + " " + model + "'s engine started.");
-        } else {
-            System.out.println(make + " " + model + "'s engine is already on.");
+    // Behaviors (methods)
+    public void start() {
+        System.out.println(make + " " + model + " engine started.");
+    }
+
+    public void accelerate(double increment) {
+        this.speed += increment;
+        System.out.println(make + " " + model + " accelerating. Current speed: " + speed + " mph.");
+    }
+
+    public void brake(double decrement) {
+        this.speed -= decrement;
+        if (this.speed < 0) {
+            this.speed = 0;
         }
+        System.out.println(make + " " + model + " braking. Current speed: " + speed + " mph.");
     }
 
-    public void stopEngine() {
-        if (isEngineOn) {
-            isEngineOn = false;
-            System.out.println(make + " " + model + "'s engine stopped.");
-        } else {
-            System.out.println(make + " " + model + "'s engine is already off.");
-        }
+    public void stop() {
+        this.speed = 0;
+        System.out.println(make + " " + model + " stopped.");
     }
 
-    public void displayCarInfo() {
+    public void displayInfo() {
         System.out.println("--- Car Info ---");
         System.out.println("Make: " + make);
         System.out.println("Model: " + model);
         System.out.println("Year: " + year);
         System.out.println("Color: " + color);
-        System.out.println("Engine On: " + (isEngineOn ? "Yes" : "No"));
+        System.out.println("Current Speed: " + speed + " mph");
         System.out.println("----------------");
     }
 }
 
-// Main class to demonstrate creating and using objects
-public class OOPConceptsDemo {
+// Main.java (To demonstrate creating and using Car objects)
+public class Main {
     public static void main(String[] args) {
-        // 2. Object Creation (Instantiating the Car class)
-        Car myCar = new Car("Toyota", "Camry", 2022, "Blue");
+        // Creating objects (instances) of the Car class
+        Car myCar = new Car("Toyota", "Camry", 2020, "Blue");
         Car anotherCar = new Car("Honda", "Civic", 2023, "Red");
 
-        // Accessing object properties and calling methods
-        myCar.displayCarInfo();
-        myCar.startEngine();
-        myCar.displayCarInfo();
-        myCar.stopEngine();
-        myCar.displayCarInfo();
+        // Calling methods on the objects
+        System.out.println("Operating myCar:");
+        myCar.displayInfo();
+        myCar.start();
+        myCar.accelerate(50);
+        myCar.brake(20);
+        myCar.stop();
+        myCar.displayInfo();
 
-        System.out.println("\n");
-
-        anotherCar.displayCarInfo();
-        anotherCar.startEngine();
-        anotherCar.startEngine(); // Try starting again
+        System.out.println("\nOperating anotherCar:");
+        anotherCar.displayInfo();
+        anotherCar.start();
+        anotherCar.accelerate(70);
+        anotherCar.displayInfo();
     }
 }
 ```
-**Explanation:**
-*   The `Car` class is a blueprint. It defines what a `Car` *is* (make, model, year, etc.) and what it *can do* (startEngine, stopEngine, displayInfo).
-*   `myCar` and `anotherCar` are objects (instances) of the `Car` class. Each object has its own unique set of property values (e.g., `myCar` is a blue Toyota, `anotherCar` is a red Honda).
+
+#### Input:
+(No direct user input for this example, execution demonstrates object interaction)
+
+#### Output:
+```
+Operating myCar:
+--- Car Info ---
+Make: Toyota
+Model: Camry
+Year: 2020
+Color: Blue
+Current Speed: 0.0 mph
+----------------
+Toyota Camry engine started.
+Toyota Camry accelerating. Current speed: 50.0 mph.
+Toyota Camry braking. Current speed: 30.0 mph.
+Toyota Camry stopped.
+--- Car Info ---
+Make: Toyota
+Model: Camry
+Year: 2020
+Color: Blue
+Current Speed: 0.0 mph
+----------------
+
+Operating anotherCar:
+--- Car Info ---
+Make: Honda
+Model: Civic
+Year: 2023
+Color: Red
+Current Speed: 0.0 mph
+----------------
+Honda Civic engine started.
+Honda Civic accelerating. Current speed: 70.0 mph.
+--- Car Info ---
+Make: Honda
+Model: Civic
+Year: 2023
+Color: Red
+Current Speed: 70.0 mph
+----------------
+```
 
 ---
 
-### 2. Encapsulation
+## 2. Encapsulation
 
-**Definition:** Encapsulation is the bundling of data (attributes) and methods (behaviors) that operate on the data into a single unit (class). It also means restricting direct access to some of an object's components, which is known as **data hiding**.
+### What is it?
 
-**How to achieve in Java:**
-*   Declare instance variables (attributes) as `private`. This prevents direct access from outside the class.
-*   Provide `public` methods (getters and setters) to access and modify these private variables. These methods provide controlled access to the data.
+Encapsulation is the bundling of data (attributes) and methods (behaviors) that operate on the data into a single unit (a class). It also refers to the mechanism of restricting direct access to some of an object's components, meaning internal state of an object is hidden from the outside world, and can only be accessed or modified through a set of public methods (getters and setters).
 
-**Benefits:**
-*   **Data Integrity:** Prevents unauthorized direct modification of data.
+### How in Java?
+
+*   Declare attributes as `private`.
+*   Provide `public` "getter" methods to read the attribute values.
+*   Provide `public` "setter" methods to modify the attribute values (with potential validation logic).
+
+### Benefits:
+
+*   **Data Hiding:** Prevents direct access to data, protecting its integrity.
 *   **Flexibility:** Allows changes to the internal implementation without affecting external code that uses the class.
-*   **Controlled Access:** You can add validation logic inside setters to ensure data is always valid.
+*   **Control:** Provides control over how data is accessed and modified (e.g., preventing negative speed).
 
-**Example:**
+### Example: Encapsulating Car Attributes
+
+Let's modify our `Car` class to encapsulate its attributes.
 
 ```java
-class BankAccount {
-    // Private attributes - data is encapsulated
-    private String accountNumber;
-    private double balance;
-    private String accountHolderName;
+// EncapsulatedCar.java
+class EncapsulatedCar {
+    // Attributes (private for encapsulation)
+    private String make;
+    private String model;
+    private int year;
+    private String color;
+    private double speed; // Made private as well
 
     // Constructor
-    public BankAccount(String accountNumber, String accountHolderName, double initialBalance) {
-        this.accountNumber = accountNumber;
-        this.accountHolderName = accountHolderName;
-        // Validate initial balance
-        if (initialBalance >= 0) {
-            this.balance = initialBalance;
-        } else {
-            System.out.println("Initial balance cannot be negative. Setting to 0.");
-            this.balance = 0;
-        }
-    }
-
-    // Public Getter methods to read data
-    public String getAccountNumber() {
-        return accountNumber;
-    }
-
-    public String getAccountHolderName() {
-        return accountHolderName;
-    }
-
-    public double getBalance() {
-        return balance;
-    }
-
-    // Public Setter methods to modify data (with validation)
-    public void deposit(double amount) {
-        if (amount > 0) {
-            balance += amount;
-            System.out.println("Deposited: $" + amount + ". New balance: $" + balance);
-        } else {
-            System.out.println("Deposit amount must be positive.");
-        }
-    }
-
-    public void withdraw(double amount) {
-        if (amount > 0 && balance >= amount) {
-            balance -= amount;
-            System.out.println("Withdrew: $" + amount + ". New balance: $" + balance);
-        } else if (amount <= 0) {
-            System.out.println("Withdrawal amount must be positive.");
-        } else {
-            System.out.println("Insufficient funds. Current balance: $" + balance);
-        }
-    }
-}
-
-public class EncapsulationDemo {
-    public static void main(String[] args) {
-        BankAccount account1 = new BankAccount("12345", "Alice Smith", 1000.0);
-
-        // Accessing data using getters
-        System.out.println("Account Number: " + account1.getAccountNumber());
-        System.out.println("Account Holder: " + account1.getAccountHolderName());
-        System.out.println("Initial Balance: $" + account1.getBalance());
-
-        // Modifying data using public methods (setters/behaviors)
-        account1.deposit(500.0);
-        account1.withdraw(200.0);
-        account1.withdraw(1500.0); // Attempt to withdraw more than balance
-        account1.deposit(-100.0); // Attempt to deposit negative amount
-
-        System.out.println("Final Balance: $" + account1.getBalance());
-
-        // Trying to directly access private variable (will cause compile error)
-        // account1.balance = 100000.0; // ERROR: balance has private access
-    }
-}
-```
-**Explanation:**
-*   The `balance`, `accountNumber`, and `accountHolderName` are `private`, preventing direct manipulation.
-*   The `deposit` and `withdraw` methods provide controlled access, ensuring that deposits are positive and withdrawals don't exceed the balance.
-
----
-
-### 3. Inheritance
-
-**Definition:** Inheritance is a mechanism where one class acquires the properties and behaviors (fields and methods) of another class. It represents an "is-a" relationship (e.g., "A Car *is-a* Vehicle").
-
-**Key Concepts:**
-*   **Superclass (Parent/Base Class):** The class whose features are inherited.
-*   **Subclass (Child/Derived/Extended Class):** The class that inherits the features.
-*   **`extends` keyword:** Used to indicate that a class inherits from another.
-*   **`super` keyword:** Used to refer to the superclass's members (constructors, methods, fields).
-
-**Benefits:**
-*   **Code Reusability:** Avoids writing the same code repeatedly.
-*   **Polymorphism:** Enables run-time polymorphism.
-*   **Hierarchy:** Creates a clear hierarchical structure for classes.
-
-**Example:**
-
-```java
-// Superclass
-class Vehicle {
-    protected String brand; // protected allows access within the same package and subclasses
-    protected int year;
-
-    public Vehicle(String brand, int year) {
-        this.brand = brand;
+    public EncapsulatedCar(String make, String model, int year, String color) {
+        this.make = make;
+        this.model = model;
         this.year = year;
-        System.out.println("Vehicle constructor called.");
+        this.color = color;
+        this.speed = 0.0;
     }
 
+    // Public Getter methods
+    public String getMake() {
+        return make;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public double getSpeed() {
+        return speed;
+    }
+
+    // Public Setter methods (with validation where applicable)
+    public void setColor(String color) {
+        // Example: Only allow certain colors (simple validation)
+        if (color.equalsIgnoreCase("Red") || color.equalsIgnoreCase("Blue") || color.equalsIgnoreCase("Black")) {
+            this.color = color;
+            System.out.println("Color updated to: " + color);
+        } else {
+            System.out.println("Invalid color: " + color + ". Color remains: " + this.color);
+        }
+    }
+
+    // Methods for behavior (can be public as they interact with private data)
     public void start() {
-        System.out.println(brand + " vehicle is starting.");
+        System.out.println(make + " " + model + " engine started.");
+    }
+
+    public void accelerate(double increment) {
+        if (increment > 0) {
+            this.speed += increment;
+            System.out.println(make + " " + model + " accelerating. Current speed: " + speed + " mph.");
+        } else {
+            System.out.println("Acceleration must be positive.");
+        }
+    }
+
+    public void brake(double decrement) {
+        if (decrement > 0) {
+            this.speed -= decrement;
+            if (this.speed < 0) {
+                this.speed = 0;
+            }
+            System.out.println(make + " " + model + " braking. Current speed: " + speed + " mph.");
+        } else {
+            System.out.println("Braking decrement must be positive.");
+        }
     }
 
     public void stop() {
-        System.out.println(brand + " vehicle is stopping.");
+        this.speed = 0;
+        System.out.println(make + " " + model + " stopped.");
     }
 
     public void displayInfo() {
-        System.out.println("Brand: " + brand + ", Year: " + year);
+        System.out.println("\n--- Encapsulated Car Info ---");
+        System.out.println("Make: " + getMake()); // Using getter
+        System.out.println("Model: " + getModel()); // Using getter
+        System.out.println("Year: " + getYear());   // Using getter
+        System.out.println("Color: " + getColor()); // Using getter
+        System.out.println("Current Speed: " + getSpeed() + " mph"); // Using getter
+        System.out.println("--------------------------");
     }
 }
 
-// Subclass Car inherits from Vehicle
-class Car extends Vehicle {
-    private String model;
-    private int numberOfDoors;
-
-    public Car(String brand, int year, String model, int numberOfDoors) {
-        super(brand, year); // Calls the constructor of the superclass (Vehicle)
-        this.model = model;
-        this.numberOfDoors = numberOfDoors;
-        System.out.println("Car constructor called.");
-    }
-
-    // Car-specific method
-    public void accelerate() {
-        System.out.println(brand + " " + model + " is accelerating.");
-    }
-
-    // Overriding the displayInfo method from Vehicle
-    @Override // Good practice to use this annotation
-    public void displayInfo() {
-        super.displayInfo(); // Call superclass's displayInfo first
-        System.out.println("Model: " + model + ", Doors: " + numberOfDoors);
-    }
-}
-
-// Subclass Motorcycle inherits from Vehicle
-class Motorcycle extends Vehicle {
-    private boolean hasSidecar;
-
-    public Motorcycle(String brand, int year, boolean hasSidecar) {
-        super(brand, year);
-        this.hasSidecar = hasSidecar;
-        System.out.println("Motorcycle constructor called.");
-    }
-
-    public void wheelie() {
-        System.out.println(brand + " motorcycle is doing a wheelie!");
-    }
-
-    @Override
-    public void displayInfo() {
-        super.displayInfo();
-        System.out.println("Has Sidecar: " + (hasSidecar ? "Yes" : "No"));
-    }
-}
-
-public class InheritanceDemo {
+// Main.java (To demonstrate Encapsulation)
+public class Main {
     public static void main(String[] args) {
-        Car myCar = new Car("Tesla", 2023, "Model 3", 4);
-        System.out.println("\n");
-        Motorcycle myBike = new Motorcycle("Harley-Davidson", 2021, false);
-        System.out.println("\n");
+        EncapsulatedCar myEncCar = new EncapsulatedCar("Ford", "Mustang", 2022, "Red");
 
-        myCar.displayInfo(); // Calls overridden method in Car
-        myCar.start();       // Inherited from Vehicle
-        myCar.accelerate();  // Car-specific method
-        myCar.stop();        // Inherited from Vehicle
-        System.out.println("\n");
+        myEncCar.displayInfo();
 
-        myBike.displayInfo(); // Calls overridden method in Motorcycle
-        myBike.start();       // Inherited from Vehicle
-        myBike.wheelie();     // Motorcycle-specific method
-        myBike.stop();        // Inherited from Vehicle
+        // Trying to set an invalid color
+        myEncCar.setColor("Green");
+
+        // Setting a valid color
+        myEncCar.setColor("Black");
+
+        // Trying to directly access a private attribute (will cause compile error)
+        // System.out.println(myEncCar.make); // This line would cause a compile-time error
+
+        // Accessing attributes using public getters
+        System.out.println("My car's model (using getter): " + myEncCar.getModel());
+
+        // Modifying speed using public methods
+        myEncCar.accelerate(60);
+        myEncCar.brake(10);
+        myEncCar.accelerate(-5); // Invalid acceleration
+        myEncCar.brake(-2);      // Invalid braking
+        myEncCar.displayInfo();
     }
 }
 ```
-**Explanation:**
-*   `Car` and `Motorcycle` are `Vehicle`s, so they inherit `brand`, `year`, `start()`, `stop()`, and `displayInfo()` from `Vehicle`.
-*   They also add their own specific attributes (`model`, `numberOfDoors`, `hasSidecar`) and behaviors (`accelerate()`, `wheelie()`).
-*   The `displayInfo()` method is **overridden** in both `Car` and `Motorcycle` to provide more specific information, demonstrating polymorphism (runtime).
-*   `super(brand, year)` is used in the subclass constructors to call the parent class's constructor and initialize inherited properties.
+
+#### Input:
+(No direct user input)
+
+#### Output:
+```
+--- Encapsulated Car Info ---
+Make: Ford
+Model: Mustang
+Year: 2022
+Color: Red
+Current Speed: 0.0 mph
+--------------------------
+Invalid color: Green. Color remains: Red
+Color updated to: Black
+My car's model (using getter): Mustang
+Ford Mustang accelerating. Current speed: 60.0 mph.
+Ford Mustang braking. Current speed: 50.0 mph.
+Acceleration must be positive.
+Braking decrement must be positive.
+
+--- Encapsulated Car Info ---
+Make: Ford
+Model: Mustang
+Year: 2022
+Color: Black
+Current Speed: 50.0 mph
+--------------------------
+```
 
 ---
 
-### 4. Polymorphism
+## 3. Inheritance
 
-**Definition:** Polymorphism literally means "many forms." In OOP, it refers to the ability of an object to take on many forms. It allows you to define one interface or common method and have multiple implementations.
+### What is it?
 
-There are two main types of polymorphism in Java:
+Inheritance is a mechanism in which one object acquires all the properties and behaviors of a parent object. It represents the "is-a" relationship (e.g., a "Car IS-A Vehicle"). It promotes code reusability and establishes a natural hierarchy between classes.
 
-1.  **Compile-time Polymorphism (Method Overloading):**
-    *   Achieved by having multiple methods with the same name in the same class but with different method signatures (different number of parameters, different types of parameters, or different order of parameters).
-    *   The compiler decides which method to call based on the arguments provided at compile time.
+### How in Java?
 
-2.  **Run-time Polymorphism (Method Overriding):**
-    *   Achieved when a subclass provides a specific implementation for a method that is already defined in its superclass.
-    *   The method to be called is determined at run-time based on the actual object type. This typically involves inheritance and interfaces/abstract classes.
+*   Use the `extends` keyword.
+*   The class whose properties are inherited is called the `Parent Class` or `Superclass`.
+*   The class that inherits the properties is called the `Child Class` or `Subclass`.
+*   A subclass can add new fields and methods, and override methods from the superclass.
 
-**Example:**
+### Benefits:
+
+*   **Code Reusability:** Reduces code duplication by allowing common code to be defined once in the superclass.
+*   **Maintainability:** Changes in the superclass automatically propagate to subclasses.
+*   **Logical Hierarchy:** Organizes classes in a clear, hierarchical structure.
+
+### Example: Vehicle Hierarchy
+
+Let's create a `Vehicle` superclass and then `Car` and `Motorcycle` subclasses.
 
 ```java
-// Compile-time Polymorphism (Method Overloading)
+// Vehicle.java (Superclass)
+class Vehicle {
+    protected String brand; // protected allows subclasses to access
+    protected int speed;
+
+    public Vehicle(String brand) {
+        this.brand = brand;
+        this.speed = 0;
+    }
+
+    public void startEngine() {
+        System.out.println(brand + " vehicle engine started.");
+    }
+
+    public void stopEngine() {
+        System.out.println(brand + " vehicle engine stopped.");
+        this.speed = 0;
+    }
+
+    public void accelerate(int increment) {
+        this.speed += increment;
+        System.out.println(brand + " accelerating. Current speed: " + speed + " mph.");
+    }
+
+    public void displaySpeed() {
+        System.out.println(brand + " current speed: " + speed + " mph.");
+    }
+}
+
+// Car.java (Subclass of Vehicle)
+class Car extends Vehicle {
+    private int numberOfDoors;
+
+    public Car(String brand, int numberOfDoors) {
+        super(brand); // Call the constructor of the superclass (Vehicle)
+        this.numberOfDoors = numberOfDoors;
+    }
+
+    public void drive() {
+        System.out.println(brand + " car is driving with " + numberOfDoors + " doors.");
+    }
+
+    // Method overriding: Providing a specific implementation for startEngine
+    @Override // Good practice to use this annotation
+    public void startEngine() {
+        System.out.println(brand + " car engine starting with a distinct roar!");
+    }
+}
+
+// Motorcycle.java (Subclass of Vehicle)
+class Motorcycle extends Vehicle {
+    private boolean hasSidecar;
+
+    public Motorcycle(String brand, boolean hasSidecar) {
+        super(brand);
+        this.hasSidecar = hasSidecar;
+    }
+
+    public void wheelie() {
+        System.out.println(brand + " motorcycle doing a wheelie!");
+    }
+
+    // Method overriding
+    @Override
+    public void startEngine() {
+        System.out.println(brand + " motorcycle engine roaring to life!");
+    }
+}
+
+// Main.java (To demonstrate Inheritance)
+public class Main {
+    public static void main(String[] args) {
+        Car hondaCivic = new Car("Honda", 4);
+        Motorcycle harleyDavidson = new Motorcycle("Harley-Davidson", false);
+
+        System.out.println("--- Honda Civic Actions ---");
+        hondaCivic.startEngine(); // Overridden method
+        hondaCivic.accelerate(40); // Inherited method
+        hondaCivic.drive();        // Car-specific method
+        hondaCivic.displaySpeed(); // Inherited method
+        hondaCivic.stopEngine();   // Inherited method
+
+        System.out.println("\n--- Harley-Davidson Actions ---");
+        harleyDavidson.startEngine(); // Overridden method
+        harleyDavidson.accelerate(60); // Inherited method
+        harleyDavidson.wheelie();       // Motorcycle-specific method
+        harleyDavidson.displaySpeed();  // Inherited method
+        harleyDavidson.stopEngine();    // Inherited method
+    }
+}
+```
+
+#### Input:
+(No direct user input)
+
+#### Output:
+```
+--- Honda Civic Actions ---
+Honda car engine starting with a distinct roar!
+Honda accelerating. Current speed: 40 mph.
+Honda car is driving with 4 doors.
+Honda current speed: 40 mph.
+Honda vehicle engine stopped.
+
+--- Harley-Davidson Actions ---
+Harley-Davidson motorcycle engine roaring to life!
+Harley-Davidson accelerating. Current speed: 60 mph.
+Harley-Davidson motorcycle doing a wheelie!
+Harley-Davidson current speed: 60 mph.
+Harley-Davidson vehicle engine stopped.
+```
+
+---
+
+## 4. Polymorphism
+
+### What is it?
+
+Polymorphism means "many forms." In Java, it refers to the ability of an object to take on many forms. Specifically, a reference variable of a superclass type can hold a reference to a subclass object. It also applies to methods having the same name but different behaviors based on the object or parameters.
+
+### Types of Polymorphism:
+
+1.  **Compile-time Polymorphism (Method Overloading):**
+    *   Achieved by having multiple methods with the same name but different parameters (number, type, or order of parameters) within the same class.
+    *   The compiler decides which method to call based on the arguments provided.
+
+2.  **Runtime Polymorphism (Method Overriding):**
+    *   Achieved through method overriding, where a subclass provides a specific implementation for a method that is already defined in its superclass.
+    *   The decision of which method to call is made at runtime based on the actual object type, not the reference type.
+
+### Benefits:
+
+*   **Flexibility & Extensibility:** New classes can be added without modifying existing code.
+*   **Simplified Code:** Allows writing generic code that works with different object types.
+
+### Example: Polymorphism
+
+#### 4.1. Method Overloading (Compile-time Polymorphism)
+
+```java
+// Calculator.java
 class Calculator {
+    // Method 1: Adds two integers
     public int add(int a, int b) {
+        System.out.println("Adding two integers:");
         return a + b;
     }
 
-    public double add(double a, double b) { // Same method name, different parameter types
-        return a + b;
-    }
-
-    public int add(int a, int b, int c) {   // Same method name, different number of parameters
+    // Method 2: Adds three integers
+    public int add(int a, int b, int c) {
+        System.out.println("Adding three integers:");
         return a + b + c;
     }
-}
 
-// Run-time Polymorphism (Method Overriding)
-class Animal {
-    public void makeSound() {
-        System.out.println("Animal makes a sound.");
+    // Method 3: Adds two doubles
+    public double add(double a, double b) {
+        System.out.println("Adding two doubles:");
+        return a + b;
+    }
+
+    // Method 4: Adds two strings (concatenation)
+    public String add(String s1, String s2) {
+        System.out.println("Concatenating two strings:");
+        return s1 + s2;
     }
 }
 
-class Dog extends Animal {
-    @Override // Indicates that this method is intended to override a superclass method
-    public void makeSound() {
-        System.out.println("Dog barks: Woof! Woof!");
-    }
-}
-
-class Cat extends Animal {
-    @Override
-    public void makeSound() {
-        System.out.println("Cat meows: Meow!");
-    }
-}
-
-class Cow extends Animal {
-    @Override
-    public void makeSound() {
-        System.out.println("Cow moos: Moo!");
-    }
-}
-
-public class PolymorphismDemo {
+// Main.java (To demonstrate Method Overloading)
+public class Main {
     public static void main(String[] args) {
-        // Compile-time Polymorphism (Method Overloading)
         Calculator calc = new Calculator();
-        System.out.println("Sum of two integers: " + calc.add(5, 10));         // Calls add(int, int)
-        System.out.println("Sum of two doubles: " + calc.add(5.5, 10.5));      // Calls add(double, double)
-        System.out.println("Sum of three integers: " + calc.add(1, 2, 3));    // Calls add(int, int, int)
-        System.out.println("\n");
 
-        // Run-time Polymorphism (Method Overriding)
-        Animal myAnimal = new Animal();
-        Animal myDog = new Dog(); // A Dog object is treated as an Animal reference
-        Animal myCat = new Cat(); // A Cat object is treated as an Animal reference
-        Animal myCow = new Cow(); // A Cow object is treated as an Animal reference
+        System.out.println("Result 1: " + calc.add(5, 10));
+        System.out.println("Result 2: " + calc.add(5, 10, 15));
+        System.out.println("Result 3: " + calc.add(5.5, 10.2));
+        System.out.println("Result 4: " + calc.add("Hello", " World"));
+    }
+}
+```
 
-        myAnimal.makeSound(); // Output: Animal makes a sound.
-        myDog.makeSound();    // Output: Dog barks: Woof! Woof! (Dog's method is called)
-        myCat.makeSound();    // Output: Cat meows: Meow! (Cat's method is called)
-        myCow.makeSound();    // Output: Cow moos: Moo! (Cow's method is called)
-        System.out.println("\n");
+#### Input:
+(No direct user input)
 
-        // Polymorphic Array/List:
-        // An array of Animal references can hold objects of Animal, Dog, Cat, Cow.
-        Animal[] farmAnimals = new Animal[4];
-        farmAnimals[0] = new Dog();
-        farmAnimals[1] = new Cat();
-        farmAnimals[2] = new Cow();
-        farmAnimals[3] = new Animal(); // Can also hold base type
+#### Output:
+```
+Adding two integers:
+Result 1: 15
+Adding three integers:
+Result 2: 30
+Adding two doubles:
+Result 3: 15.7
+Concatenating two strings:
+Result 4: Hello World
+```
 
-        System.out.println("Sounds from the farm:");
-        for (Animal animal : farmAnimals) {
-            animal.makeSound(); // At runtime, the correct makeSound() method is invoked
+#### 4.2. Method Overriding (Runtime Polymorphism)
+
+We've already seen method overriding in the Inheritance example (`startEngine()` in `Car` and `Motorcycle`). Here, let's explicitly demonstrate runtime polymorphism with an array of `Vehicle` references.
+
+```java
+// Vehicle.java (Same as before, used as Superclass)
+class Vehicle {
+    protected String brand;
+    protected int speed;
+
+    public Vehicle(String brand) {
+        this.brand = brand;
+        this.speed = 0;
+    }
+
+    public void startEngine() {
+        System.out.println(brand + " vehicle engine started.");
+    }
+    // ... other methods ...
+}
+
+// Car.java (Subclass, overriding startEngine())
+class Car extends Vehicle {
+    public Car(String brand, int numberOfDoors) {
+        super(brand);
+    }
+
+    @Override
+    public void startEngine() {
+        System.out.println(brand + " car engine starting with a distinct roar!");
+    }
+    // ... other methods ...
+}
+
+// Motorcycle.java (Subclass, overriding startEngine())
+class Motorcycle extends Vehicle {
+    public Motorcycle(String brand, boolean hasSidecar) {
+        super(brand);
+    }
+
+    @Override
+    public void startEngine() {
+        System.out.println(brand + " motorcycle engine roaring to life!");
+    }
+    // ... other methods ...
+}
+
+// Main.java (To demonstrate Runtime Polymorphism)
+public class Main {
+    public static void main(String[] args) {
+        // Creating objects of subclasses
+        Vehicle myCar = new Car("Tesla", 4);           // Vehicle reference, Car object
+        Vehicle myMotorcycle = new Motorcycle("Ducati", false); // Vehicle reference, Motorcycle object
+        Vehicle genericVehicle = new Vehicle("Generic Truck"); // Vehicle reference, Vehicle object
+
+        // Demonstrate runtime polymorphism with individual objects
+        System.out.println("--- Individual Objects ---");
+        myCar.startEngine();         // Calls Car's startEngine()
+        myMotorcycle.startEngine();  // Calls Motorcycle's startEngine()
+        genericVehicle.startEngine();// Calls Vehicle's startEngine()
+
+        System.out.println("\n--- Array of Vehicles (Polymorphic Behavior) ---");
+        // Create an array of Vehicle references
+        Vehicle[] vehicles = new Vehicle[3];
+        vehicles[0] = new Car("BMW", 2);
+        vehicles[1] = new Motorcycle("Kawasaki", true);
+        vehicles[2] = new Vehicle("Boeing"); // A generic vehicle, perhaps a plane engine
+
+        // Loop through the array and call startEngine() on each.
+        // The actual method called depends on the *runtime type* of the object.
+        for (Vehicle v : vehicles) {
+            v.startEngine();
         }
     }
 }
 ```
-**Explanation:**
-*   **Overloading:** `Calculator` has three `add` methods. The compiler selects the correct one based on the number and types of arguments you pass.
-*   **Overriding:** When `myDog.makeSound()` is called, even though `myDog` is declared as an `Animal` type, the JVM knows it's actually a `Dog` object, so it calls `Dog`'s `makeSound()` method. This is a powerful feature for designing flexible and extensible systems. The `Animal[] farmAnimals` example clearly shows how a single method call (`animal.makeSound()`) behaves differently based on the actual object type at runtime.
+
+#### Input:
+(No direct user input)
+
+#### Output:
+```
+--- Individual Objects ---
+Tesla car engine starting with a distinct roar!
+Ducati motorcycle engine roaring to life!
+Generic Truck vehicle engine started.
+
+--- Array of Vehicles (Polymorphic Behavior) ---
+BMW car engine starting with a distinct roar!
+Kawasaki motorcycle engine roaring to life!
+Boeing vehicle engine started.
+```
 
 ---
 
-### 5. Abstraction
+## 5. Abstraction
 
-**Definition:** Abstraction is the concept of hiding the complex implementation details and showing only the essential features of an object. It focuses on "what" an object does rather than "how" it does it.
+### What is it?
 
-**How to achieve in Java:**
-*   **Abstract Classes:** Classes that cannot be instantiated directly. They can contain abstract methods (methods declared without an implementation) and concrete methods. Subclasses *must* provide implementations for all abstract methods, or they must also be declared abstract. Declared using the `abstract` keyword.
-*   **Interfaces:** A contract that defines a set of methods that a class must implement. Prior to Java 8, interfaces could only have abstract methods. From Java 8 onwards, they can also have default and static methods. A class `implements` an interface.
+Abstraction is the process of hiding the implementation details and showing only the essential features of the object. It focuses on "what" an object does rather than "how" it does it. In Java, abstraction is achieved using **abstract classes** and **interfaces**.
 
-**Benefits:**
-*   **Simplifies Complexity:** Users only interact with the essential features, ignoring unnecessary details.
-*   **Enforces Design:** Ensures that subclasses implement specific methods (defined by abstract methods or interfaces).
-*   **Flexibility:** Allows for different implementations of the same abstract concept.
+### How in Java?
 
-**Example (using Abstract Class):**
+1.  **Abstract Classes:**
+    *   Declared using the `abstract` keyword.
+    *   Cannot be instantiated (you cannot create objects of an abstract class).
+    *   Can have both abstract methods (methods without a body, declared `abstract`) and concrete methods (methods with a body).
+    *   If a class has at least one abstract method, it must be declared abstract.
+    *   Subclasses must implement all abstract methods of their abstract superclass, or they must also be declared abstract.
+
+2.  **Interfaces:**
+    *   A blueprint of a class. It can have abstract methods (implicitly `public abstract` before Java 8; after Java 8, can also have `default` and `static` methods with implementations).
+    *   All fields are implicitly `public static final`.
+    *   A class implements an interface using the `implements` keyword.
+    *   A class can implement multiple interfaces, but can only extend one class (abstract or concrete).
+
+### Benefits:
+
+*   **Simplification:** Reduces complexity by hiding unnecessary details.
+*   **Enforced Structure:** Ensures that subclasses or implementing classes provide specific implementations for abstract methods, enforcing a common contract.
+*   **Flexibility:** Allows changes to implementation without affecting external interaction.
+
+### Example: Abstraction
+
+#### 5.1. Abstract Class Example: Shape
 
 ```java
-// Abstract Class
+// Abstract Shape.java
 abstract class Shape {
-    String name;
+    protected String name;
 
     public Shape(String name) {
         this.name = name;
     }
 
-    // Abstract method (no body) - subclasses MUST implement this
-    public abstract double getArea();
+    // Abstract methods: Must be implemented by concrete subclasses
+    public abstract double calculateArea();
+    public abstract void draw();
 
-    // Concrete method (with body) - subclasses inherit this
-    public void display() {
-        System.out.println("Shape: " + name);
+    // Concrete method: Can be used by subclasses as is
+    public void displayInfo() {
+        System.out.println("This is a " + name + " shape.");
     }
 }
 
-// Concrete Subclass inheriting from Shape
+// Circle.java (Concrete subclass of Shape)
 class Circle extends Shape {
     private double radius;
 
-    public Circle(String name, double radius) {
-        super(name);
+    public Circle(double radius) {
+        super("Circle");
         this.radius = radius;
     }
 
     @Override
-    public double getArea() {
+    public double calculateArea() {
         return Math.PI * radius * radius;
+    }
+
+    @Override
+    public void draw() {
+        System.out.println("Drawing a Circle with radius " + radius);
     }
 }
 
-// Concrete Subclass inheriting from Shape
+// Rectangle.java (Concrete subclass of Shape)
 class Rectangle extends Shape {
     private double width;
     private double height;
 
-    public Rectangle(String name, double width, double height) {
-        super(name);
+    public Rectangle(double width, double height) {
+        super("Rectangle");
         this.width = width;
         this.height = height;
     }
 
     @Override
-    public double getArea() {
+    public double calculateArea() {
         return width * height;
+    }
+
+    @Override
+    public void draw() {
+        System.out.println("Drawing a Rectangle with width " + width + " and height " + height);
     }
 }
 
-public class AbstractionDemoAbstractClass {
+// Main.java (To demonstrate Abstract Class)
+public class Main {
     public static void main(String[] args) {
-        // Cannot instantiate an abstract class directly
-        // Shape s = new Shape("Generic Shape"); // Compile Error!
+        // Cannot instantiate an abstract class directly:
+        // Shape myShape = new Shape("Generic"); // This would cause a compile-time error
 
-        Circle circle = new Circle("My Circle", 5.0);
-        Rectangle rectangle = new Rectangle("My Rectangle", 4.0, 6.0);
+        Shape circle = new Circle(5.0);
+        Shape rectangle = new Rectangle(4.0, 6.0);
 
-        // Using polymorphic references
-        Shape s1 = circle;
-        Shape s2 = rectangle;
+        System.out.println("--- Shape Operations ---");
 
-        s1.display();
-        System.out.println("Area: " + s1.getArea());
-        System.out.println("\n");
+        circle.displayInfo();
+        circle.draw();
+        System.out.println("Area of " + circle.name + ": " + circle.calculateArea());
 
-        s2.display();
-        System.out.println("Area: " + s2.getArea());
+        System.out.println(); // For spacing
+
+        rectangle.displayInfo();
+        rectangle.draw();
+        System.out.println("Area of " + rectangle.name + ": " + rectangle.calculateArea());
     }
 }
 ```
 
-**Example (using Interface):**
+#### Input:
+(No direct user input)
+
+#### Output:
+```
+--- Shape Operations ---
+This is a Circle shape.
+Drawing a Circle with radius 5.0
+Area of Circle: 78.53981633974483
+
+This is a Rectangle shape.
+Drawing a Rectangle with width 4.0 and height 6.0
+Area of Rectangle: 24.0
+```
+
+#### 5.2. Interface Example: Flyable
 
 ```java
-// Interface
-interface Drawable {
-    // All methods in an interface are implicitly public and abstract (before Java 8)
-    void draw();
-    
-    // Default method (from Java 8) - provides a default implementation
-    default void resize() {
-        System.out.println("Resizing the drawable object.");
+// Flyable.java (Interface)
+interface Flyable {
+    // All methods in an interface are implicitly public abstract (before Java 8)
+    // or can be default/static with implementation (Java 8+)
+    void fly();
+    void land();
+
+    // Default method (Java 8+)
+    default void takeOff() {
+        System.out.println("Taking off... preparing for flight!");
     }
 
-    // Static method (from Java 8)
-    static void showInstructions() {
-        System.out.println("To draw, implement the draw() method.");
+    // Static method (Java 8+)
+    static void describeFlying() {
+        System.out.println("This interface defines objects that can fly and land.");
     }
 }
 
-// Class implementing the interface
-class Square implements Drawable {
-    private double side;
+// Airplane.java (Class implementing Flyable)
+class Airplane implements Flyable {
+    private String model;
 
-    public Square(double side) {
-        this.side = side;
+    public Airplane(String model) {
+        this.model = model;
     }
 
     @Override
-    public void draw() {
-        System.out.println("Drawing a Square with side " + side);
-    }
-    // No need to implement resize(), as it has a default implementation
-}
-
-// Another class implementing the interface
-class Triangle implements Drawable {
-    private double base;
-    private double height;
-
-    public Triangle(double base, double height) {
-        this.base = base;
-        this.height = height;
+    public void fly() {
+        System.out.println(model + " is flying high in the sky!");
     }
 
     @Override
-    public void draw() {
-        System.out.println("Drawing a Triangle with base " + base + " and height " + height);
+    public void land() {
+        System.out.println(model + " is landing safely on the runway.");
     }
 }
 
-public class AbstractionDemoInterface {
+// Bird.java (Class implementing Flyable)
+class Bird implements Flyable {
+    private String species;
+
+    public Bird(String species) {
+        this.species = species;
+    }
+
+    @Override
+    public void fly() {
+        System.out.println(species + " is flapping its wings and flying!");
+    }
+
+    @Override
+    public void land() {
+        System.out.println(species + " is landing softly on a branch.");
+    }
+}
+
+// Main.java (To demonstrate Interface)
+public class Main {
     public static void main(String[] args) {
-        Drawable square = new Square(7.0);
-        Drawable triangle = new Triangle(5.0, 8.0);
+        System.out.println("--- Interface Demonstration ---");
+        Flyable.describeFlying(); // Calling static method on interface
 
-        square.draw();
-        square.resize(); // Calls default method
-        System.out.println("\n");
+        Airplane boeing = new Airplane("Boeing 747");
+        Bird eagle = new Bird("Eagle");
 
-        triangle.draw();
-        triangle.resize(); // Calls default method
-        System.out.println("\n");
+        System.out.println("\n--- Airplane Actions ---");
+        boeing.takeOff(); // Using default method
+        boeing.fly();
+        boeing.land();
 
-        // Calling static method of interface
-        Drawable.showInstructions();
+        System.out.println("\n--- Bird Actions ---");
+        eagle.takeOff(); // Using default method
+        eagle.fly();
+        eagle.land();
 
-        // Using an array of interfaces (polymorphism)
-        Drawable[] drawings = new Drawable[2];
-        drawings[0] = new Square(10);
-        drawings[1] = new Triangle(6, 9);
+        System.out.println("\n--- Polymorphic Interface Array ---");
+        Flyable[] flyingObjects = new Flyable[2];
+        flyingObjects[0] = new Airplane("Airbus A380");
+        flyingObjects[1] = new Bird("Sparrow");
 
-        System.out.println("\nDrawing all shapes:");
-        for (Drawable d : drawings) {
-            d.draw();
+        for (Flyable obj : flyingObjects) {
+            obj.takeOff();
+            obj.fly();
+            obj.land();
+            System.out.println("---");
         }
     }
 }
 ```
-**Explanation:**
-*   **Abstract Class:** `Shape` defines the common `display()` method and an abstract `getArea()` method. Subclasses like `Circle` and `Rectangle` *must* provide their own implementation for `getArea()` as the concept of area differs for each shape.
-*   **Interface:** `Drawable` defines a contract: any class implementing `Drawable` *must* provide a `draw()` method. It doesn't care *how* it's drawn, just that it *can* be drawn. This allows different classes (e.g., `Square`, `Triangle`) to fulfill the same contract in their own way. Interfaces are great for defining capabilities (`can-do` relationship).
+
+#### Input:
+(No direct user input)
+
+#### Output:
+```
+--- Interface Demonstration ---
+This interface defines objects that can fly and land.
+
+--- Airplane Actions ---
+Taking off... preparing for flight!
+Boeing 747 is flying high in the sky!
+Boeing 747 is landing safely on the runway.
+
+--- Bird Actions ---
+Taking off... preparing for flight!
+Eagle is flapping its wings and flying!
+Eagle is landing softly on a branch.
+
+--- Polymorphic Interface Array ---
+Taking off... preparing for flight!
+Airbus A380 is flying high in the sky!
+Airbus A380 is landing safely on the runway.
+---
+Taking off... preparing for flight!
+Sparrow is flapping its wings and flying!
+Sparrow is landing softly on a branch.
+---
+```
+
+---
+
+## Benefits of OOP in Java
+
+1.  **Modularity:** Objects are self-contained units, making it easier to manage and understand the codebase.
+2.  **Reusability:** Inheritance and interfaces promote code reuse, reducing development time and effort.
+3.  **Maintainability:** Encapsulation helps isolate changes, making it easier to modify or debug parts of the code without affecting others.
+4.  **Extensibility:** Polymorphism and abstraction allow for easy addition of new features or types without altering existing code.
+5.  **Flexibility:** Allows for multiple implementations of interfaces or abstract classes.
+6.  **Reduced Complexity:** Breaking down complex problems into smaller, manageable objects makes large systems easier to design and develop.
 
 ---
 
 ## Conclusion
 
-Object-Oriented Programming is a powerful paradigm that helps developers create robust, scalable, and maintainable software. By understanding and applying the core principles of Classes & Objects, Encapsulation, Inheritance, Polymorphism, and Abstraction, you can write cleaner, more efficient, and more flexible Java applications that model real-world problems effectively. Mastering these concepts is fundamental to becoming proficient in Java development.
+Object-Oriented Programming is a powerful paradigm that forms the backbone of Java development. By mastering **Encapsulation**, **Inheritance**, **Polymorphism**, and **Abstraction**, you can design and build robust, flexible, and maintainable software systems. These principles encourage thinking about software in terms of real-world entities and their interactions, leading to more intuitive and scalable solutions.

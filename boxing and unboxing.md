@@ -1,281 +1,358 @@
 # Boxing and Unboxing in Java
 
-Boxing and Unboxing are fundamental features in Java that bridge the gap between **primitive types** (like `int`, `long`, `double`, `boolean`) and their corresponding **wrapper classes** (like `Integer`, `Long`, `Double`, `Boolean`).
+In Java, **Boxing** and **Unboxing** are mechanisms that allow you to convert between primitive types (like `int`, `char`, `double`) and their corresponding wrapper class objects (like `Integer`, `Character`, `Double`). This feature was introduced in Java 5 to bridge the gap between Java's primitive data types and its object-oriented nature.
 
-Prior to Java 5, converting between primitives and wrapper objects had to be done manually. With the introduction of **Autoboxing** and **Auto-unboxing** in Java 5, these conversions are performed automatically by the Java compiler, making code cleaner and easier to write.
+## 1. Primitives vs. Wrapper Classes
 
----
+Before diving into boxing/unboxing, let's quickly review the difference:
 
-## 1. Primitive Types vs. Wrapper Classes
+*   **Primitive Types:**
+    *   `byte`, `short`, `int`, `long`, `float`, `double`, `boolean`, `char`
+    *   Represent raw values, not objects.
+    *   Stored directly in memory, making them efficient.
+    *   Cannot be `null`.
+    *   Do not have methods.
 
-Before diving into boxing/unboxing, let's quickly review the distinction:
+*   **Wrapper Classes:**
+    *   `Byte`, `Short`, `Integer`, `Long`, `Float`, `Double`, `Boolean`, `Character`
+    *   Are objects that "wrap" or encapsulate the primitive values.
+    *   Provide utility methods (e.g., `parseInt()`, `toString()`).
+    *   Can be `null`.
+    *   Are used in contexts where objects are required (e.g., Collections, Generics).
 
-*   **Primitive Types:** Represent raw values and are stored directly in memory (e.g., `int`, `char`, `boolean`, `double`). They are not objects and do not have methods.
-*   **Wrapper Classes:** Are classes in the `java.lang` package that encapsulate primitive values into objects (e.g., `Integer`, `Character`, `Boolean`, `Double`). They provide methods for manipulating the primitive value and are necessary when you need to treat a primitive as an object (e.g., in collections, generics, or nullability).
-
----
-
-## 2. Boxing (Primitive to Wrapper Object)
+## 2. Boxing
 
 **Boxing** is the process of converting a primitive type into its corresponding wrapper class object.
 
-### 2.1. Manual Boxing (Pre-Java 5 Concept)
+### 2.1. Manual Boxing
 
-Before Java 5, you had to explicitly create an object of the wrapper class using its constructor or static factory method (like `valueOf()`).
+Before Java 5, you had to manually create a wrapper object from a primitive value.
 
-**Example:**
-
-```java
-// Manual Boxing
-int primitiveInt = 100;
-
-// Using the constructor (though less preferred and deprecated in newer Java versions for Integer/Long)
-// Integer wrapperInt1 = new Integer(primitiveInt); 
-// System.out.println("Manually Boxed (constructor): " + wrapperInt1);
-
-// Using the static factory method (recommended way for manual boxing)
-Integer wrapperInt2 = Integer.valueOf(primitiveInt);
-System.out.println("Manually Boxed (valueOf()): " + wrapperInt2);
-
-double primitiveDouble = 25.5;
-Double wrapperDouble = Double.valueOf(primitiveDouble);
-System.out.println("Manually Boxed (valueOf()): " + wrapperDouble);
-```
-
-### 2.2. Autoboxing (Java 5+)
-
-**Autoboxing** is the automatic conversion performed by the Java compiler from a primitive type to its corresponding wrapper class object. This happens implicitly without you writing explicit conversion code.
-
-**Example:**
+**Syntax:**
 
 ```java
-// Autoboxing
-int primitiveValue = 50;
-
-// The compiler automatically converts 'primitiveValue' (int) to an 'Integer' object
-Integer wrapperObject = primitiveValue; 
-System.out.println("Autoboxed Integer: " + wrapperObject);
-
-double dPrimitive = 99.9;
-Double dWrapper = dPrimitive; // Autoboxing from double to Double
-System.out.println("Autoboxed Double: " + dWrapper);
-
-boolean bPrimitive = true;
-Boolean bWrapper = bPrimitive; // Autoboxing from boolean to Boolean
-System.out.println("Autoboxed Boolean: " + bWrapper);
+WrapperClass obj = new WrapperClass(primitiveValue); // Constructor (less preferred, deprecated in Java 9 for Integer)
+WrapperClass obj = WrapperClass.valueOf(primitiveValue); // Static factory method (preferred)
 ```
 
-### 2.3. Why is Boxing/Autoboxing Useful?
+**Example: Manual Boxing**
 
-*   **Collections:** Java's collection framework (e.g., `ArrayList`, `HashMap`) can only store objects, not primitive types. Autoboxing allows you to easily add primitive values to collections.
-    ```java
-    import java.util.ArrayList;
-    import java.util.List;
-
-    List<Integer> numbers = new ArrayList<>();
-    numbers.add(10);   // Autoboxes 10 (int) to new Integer(10)
-    numbers.add(20);   // Autoboxes 20 (int) to new Integer(20)
-    numbers.add(30);   // Autoboxes 30 (int) to new Integer(30)
-    System.out.println("Numbers in ArrayList: " + numbers);
-    ```
-*   **Generics:** Generics in Java work with types, and type parameters must be reference types (objects), not primitives.
-    ```java
-    // Cannot declare List<int>
-    List<Integer> integerList = new ArrayList<>();
-    ```
-*   **Method Arguments/Return Types:** When a method expects an object but you pass a primitive, autoboxing can handle the conversion.
-    ```java
-    public static void printInteger(Integer num) {
-        System.out.println("Received Integer object: " + num);
-    }
-
+```java
+public class ManualBoxingExample {
     public static void main(String[] args) {
-        int myInt = 42;
-        printInteger(myInt); // Autoboxes myInt (int) to Integer
+        // Manual Boxing using valueOf() - Recommended
+        int primitiveInt = 100;
+        Integer boxedInteger1 = Integer.valueOf(primitiveInt);
+        System.out.println("Manually Boxed (valueOf): " + boxedInteger1);
+
+        // Manual Boxing using constructor (generally not recommended, deprecated in Java 9 for Integer)
+        double primitiveDouble = 25.5;
+        Double boxedDouble = new Double(primitiveDouble); // Constructor call
+        System.out.println("Manually Boxed (Constructor): " + boxedDouble);
+
+        boolean primitiveBoolean = true;
+        Boolean boxedBoolean = Boolean.valueOf(primitiveBoolean);
+        System.out.println("Manually Boxed (valueOf): " + boxedBoolean);
     }
-    ```
-
----
-
-## 3. Unboxing (Wrapper Object to Primitive)
-
-**Unboxing** is the process of converting a wrapper class object back into its corresponding primitive type.
-
-### 3.1. Manual Unboxing (Pre-Java 5 Concept)
-
-Before Java 5, you had to explicitly call a method (e.g., `intValue()`, `doubleValue()`) on the wrapper object to retrieve its primitive value.
-
-**Example:**
-
-```java
-// Manual Unboxing
-Integer wrapperInt = Integer.valueOf(75);
-int primitiveInt = wrapperInt.intValue(); // Explicitly calling intValue()
-System.out.println("Manually Unboxed int: " + primitiveInt);
-
-Double wrapperDouble = Double.valueOf(10.5);
-double primitiveDouble = wrapperDouble.doubleValue(); // Explicitly calling doubleValue()
-System.out.println("Manually Unboxed double: " + primitiveDouble);
+}
 ```
 
-### 3.2. Auto-unboxing (Java 5+)
+**Input:**
+(No direct input required, values are hardcoded in the program.)
 
-**Auto-unboxing** is the automatic conversion performed by the Java compiler from a wrapper class object to its corresponding primitive type. This also happens implicitly.
+**Output:**
 
-**Example:**
-
-```java
-// Auto-unboxing
-Integer wrapperObject = 123; // This itself is autoboxing from int to Integer
-
-// The compiler automatically converts 'wrapperObject' (Integer) to an 'int' primitive
-int primitiveValue = wrapperObject; 
-System.out.println("Auto-unboxed int: " + primitiveValue);
-
-Double dWrapper = 5.0; // Autoboxing
-double dPrimitive = dWrapper; // Auto-unboxing from Double to double
-System.out.println("Auto-unboxed double: " + dPrimitive);
-
-Boolean bWrapper = false; // Autoboxing
-boolean bPrimitive = bWrapper; // Auto-unboxing from Boolean to boolean
-System.out.println("Auto-unboxed boolean: " + bPrimitive);
+```
+Manually Boxed (valueOf): 100
+Manually Boxed (Constructor): 25.5
+Manually Boxed (valueOf): true
 ```
 
-### 3.3. Why is Unboxing/Auto-unboxing Useful?
+### 2.2. Autoboxing
 
-*   **Arithmetic Operations:** Primitive types are generally used for arithmetic operations. Auto-unboxing allows you to perform calculations directly with wrapper objects.
+**Autoboxing** is the automatic conversion of a primitive type to its corresponding wrapper class object by the Java compiler. This was introduced in Java 5 to simplify code.
+
+**Example: Autoboxing**
+
+```java
+public class AutoboxingExample {
+    public static void main(String[] args) {
+        // Autoboxing an int to an Integer
+        int primitiveInt = 50;
+        Integer autoBoxedInt = primitiveInt; // Autoboxing happens here
+        System.out.println("Autoboxed Integer: " + autoBoxedInt);
+
+        // Autoboxing a char to a Character
+        char primitiveChar = 'A';
+        Character autoBoxedChar = primitiveChar; // Autoboxing happens here
+        System.out.println("Autoboxed Character: " + autoBoxedChar);
+
+        // Autoboxing directly in method calls or assignments
+        Integer sum = 10 + 20; // 10 and 20 are primitives, result 30 is autoboxed to Integer
+        System.out.println("Autoboxed sum: " + sum);
+
+        // Example in a collection
+        java.util.List<Integer> numbers = new java.util.ArrayList<>();
+        numbers.add(10); // 10 (int) is autoboxed to Integer
+        numbers.add(20); // 20 (int) is autoboxed to Integer
+        System.out.println("List of Integers (autoboxing): " + numbers);
+    }
+}
+```
+
+**Input:**
+(No direct input required.)
+
+**Output:**
+
+```
+Autoboxed Integer: 50
+Autoboxed Character: A
+Autoboxed sum: 30
+List of Integers (autoboxing): [10, 20]
+```
+
+## 3. Unboxing
+
+**Unboxing** is the process of converting a wrapper class object into its corresponding primitive type.
+
+### 3.1. Manual Unboxing
+
+You can manually extract the primitive value from a wrapper object using methods like `intValue()`, `doubleValue()`, `charValue()`, etc.
+
+**Syntax:**
+
+```java
+primitiveType primitiveValue = wrapperObject.primitiveTypeValue(); // e.g., intValue(), doubleValue()
+```
+
+**Example: Manual Unboxing**
+
+```java
+public class ManualUnboxingExample {
+    public static void main(String[] args) {
+        // Manual Unboxing from an Integer to an int
+        Integer boxedInteger = Integer.valueOf(75);
+        int primitiveInt = boxedInteger.intValue(); // Manual unboxing
+        System.out.println("Manually Unboxed int: " + primitiveInt);
+
+        // Manual Unboxing from a Double to a double
+        Double boxedDouble = Double.valueOf(99.9);
+        double primitiveDouble = boxedDouble.doubleValue(); // Manual unboxing
+        System.out.println("Manually Unboxed double: " + primitiveDouble);
+
+        // Manual Unboxing from a Boolean to a boolean
+        Boolean boxedBoolean = Boolean.TRUE;
+        boolean primitiveBoolean = boxedBoolean.booleanValue(); // Manual unboxing
+        System.out.println("Manually Unboxed boolean: " + primitiveBoolean);
+    }
+}
+```
+
+**Input:**
+(No direct input required.)
+
+**Output:**
+
+```
+Manually Unboxed int: 75
+Manually Unboxed double: 99.9
+Manually Unboxed boolean: true
+```
+
+### 3.2. Autounboxing
+
+**Autounboxing** is the automatic conversion of a wrapper class object to its corresponding primitive type by the Java compiler. This also simplifies code by removing the need for explicit method calls.
+
+**Example: Autounboxing**
+
+```java
+public class AutoUnboxingExample {
+    public static void main(String[] args) {
+        // Autounboxing an Integer to an int
+        Integer autoBoxedInt = 150;
+        int primitiveInt = autoBoxedInt; // Autounboxing happens here
+        System.out.println("Autounboxed int: " + primitiveInt);
+
+        // Autounboxing a Double to a double
+        Double autoBoxedDouble = 77.7;
+        double primitiveDouble = autoBoxedDouble; // Autounboxing happens here
+        System.out.println("Autounboxed double: " + primitiveDouble);
+
+        // Autounboxing in arithmetic operations
+        Integer a = 5;
+        Integer b = 3;
+        int result = a + b; // a and b are autounboxed to int for the addition
+        System.out.println("Autounboxed result of addition: " + result);
+
+        // Autounboxing when comparing
+        Boolean flag = true;
+        if (flag) { // flag (Boolean) is autounboxed to boolean
+            System.out.println("Flag is true (autounboxing in conditional)");
+        }
+    }
+}
+```
+
+**Input:**
+(No direct input required.)
+
+**Output:**
+
+```
+Autounboxed int: 150
+Autounboxed double: 77.7
+Autounboxed result of addition: 8
+Flag is true (autounboxing in conditional)
+```
+
+## 4. Why Use Boxing and Unboxing (Benefits)?
+
+1.  **Generics and Collections:** Java Generics (e.g., `ArrayList<T>`, `HashMap<K, V>`) only work with objects, not primitive types. Autoboxing/unboxing allows you to seamlessly store primitive values in collections.
     ```java
-    Integer num1 = 10; // Autoboxed
-    Integer num2 = 20; // Autoboxed
-
-    // Auto-unboxes num1 and num2 to int, then performs addition
-    int sum = num1 + num2; 
-    System.out.println("Sum of Integer objects: " + sum);
-
-    Double val1 = 15.5;
-    Double val2 = 2.0;
-    double product = val1 * val2; // Auto-unboxes for multiplication
-    System.out.println("Product of Double objects: " + product);
+    // Cannot do: ArrayList<int> myInts = new ArrayList<>();
+    java.util.List<Integer> myInts = new java.util.ArrayList<>();
+    myInts.add(10); // Autoboxing: int 10 -> Integer object
+    int value = myInts.get(0); // Autounboxing: Integer object -> int
     ```
-*   **Assignments:** Assigning a wrapper object to a primitive variable.
-*   **Method Arguments/Return Types:** When a method expects a primitive but you pass an object, auto-unboxing can convert it.
+2.  **Null Values:** Wrapper classes can hold `null`, which is useful when a value might be absent or undefined. Primitives cannot be `null`.
+3.  **Object-Oriented Programming:** When you need to treat a primitive value as an object (e.g., passing it to a method that expects an `Object`, or calling methods like `toString()`, `hashCode()`, `equals()`), boxing facilitates this.
+4.  **Convenience:** Autoboxing/unboxing significantly reduces boilerplate code, making Java code cleaner and easier to read.
 
----
+## 5. Important Considerations / Pitfalls
 
-## 4. When Does Autoboxing/Auto-unboxing Occur?
+While convenient, autoboxing/unboxing comes with potential downsides:
 
-Autoboxing and auto-unboxing happen in various contexts:
+### 5.1. Performance Overhead
 
-1.  **Assignments:**
-    *   `Integer obj = 10;` (autoboxing)
-    *   `int val = new Integer(20);` (auto-unboxing)
-2.  **Method Invocations:**
-    *   Passing a primitive value to a method that expects a wrapper object.
-    *   `void myMethod(Integer i) { ... }`
-    *   `myMethod(100);` (autoboxing)
-    *   Returning a wrapper object from a method that expects a primitive.
-    *   `int getPrimitive() { return new Integer(50); }` (auto-unboxing)
-3.  **Arithmetic and Relational Operations:**
-    *   `Integer x = 5; Integer y = 10; int sum = x + y;` (auto-unboxing for `x` and `y`, then addition)
-    *   `Boolean flag = true; if (flag) { ... }` (auto-unboxing for `flag`)
-4.  **Conditional Expressions:**
-    *   `Integer val = (true ? 10 : 20);` (both 10 and 20 are autoboxed)
-    *   `int result = (someBoolean ? new Integer(10) : new Integer(20));` (both Integer objects are auto-unboxed)
+*   **Object Creation:** Every time autoboxing occurs, a new object is created on the heap. This can lead to increased memory consumption and potentially slower performance, especially in performance-critical applications or tight loops where many boxing/unboxing operations happen.
 
----
-
-## 5. Important Considerations and Pitfalls
-
-While autoboxing/auto-unboxing simplify code, there are critical considerations:
-
-### 5.1. `NullPointerException` During Auto-unboxing
-
-If you try to auto-unbox a `null` wrapper object, Java will throw a `NullPointerException`. This is a very common runtime error.
-
-**Example:**
+**Example: Performance Concern**
 
 ```java
-Integer favoriteNumber = null;
-try {
-    int num = favoriteNumber; // Auto-unboxing null to a primitive 'int'
-    System.out.println("Your number: " + num);
-} catch (NullPointerException e) {
-    System.err.println("Error: Cannot unbox a null Integer! " + e.getMessage());
-}
+public class PerformanceExample {
+    public static void main(String[] args) {
+        long startTime = System.nanoTime();
+        Long sum = 0L; // sum is an object. Each addition creates a new Long object.
+        for (long i = 0; i < 1_000_000; i++) {
+            sum += i; // Autounboxing (sum to long), addition, then Autoboxing (result to Long)
+        }
+        long endTime = System.nanoTime();
+        System.out.println("Time with Autoboxing (Long sum): " + (endTime - startTime) / 1_000_000 + " ms");
 
-// Always check for null before unboxing if the wrapper object can be null
-if (favoriteNumber != null) {
-    int num = favoriteNumber;
-    System.out.println("Your number (safe): " + num);
-} else {
-    System.out.println("Favorite number is not set.");
+        startTime = System.nanoTime();
+        long primitiveSum = 0L; // primitive long. No object creation.
+        for (long i = 0; i < 1_000_000; i++) {
+            primitiveSum += i;
+        }
+        endTime = System.nanoTime();
+        System.out.println("Time with Primitive (long sum): " + (endTime - startTime) / 1_000_000 + " ms");
+    }
 }
 ```
 
-### 5.2. Performance Overhead
+**Input:**
+(No direct input required.)
 
-Autoboxing creates new objects on the heap. While the JVM is highly optimized, creating many objects (especially in loops) can lead to:
+**Output (Example - actual times may vary):**
 
-*   **Increased Memory Consumption:** More objects mean more memory usage.
-*   **Garbage Collection Overhead:** More objects to create also means more objects for the Garbage Collector to clean up, which can sometimes introduce pauses.
+```
+Time with Autoboxing (Long sum): 34 ms
+Time with Primitive (long sum): 2 ms
+```
+*Observation: The primitive version is significantly faster, demonstrating the overhead of object creation and garbage collection associated with autoboxing.*
 
-For performance-critical code or very large loops, it's generally better to use primitives directly if objects are not strictly required.
+### 5.2. `NullPointerException`
 
-**Example of potential overhead:**
+*   **The most common pitfall!** If a wrapper object that is `null` is autounboxed, a `NullPointerException` will be thrown at runtime.
+
+**Example: `NullPointerException` with Autounboxing**
 
 ```java
-long startTime = System.nanoTime();
-Long sum = 0L; // Autoboxing 0 to Long
-for (long i = 0; i < 1_000_000; i++) {
-    sum += i; // In each iteration: sum (Long) is unboxed to long, i (long) is added, then result is autoboxed back to Long.
-}
-long endTime = System.nanoTime();
-System.out.println("Wrapper sum: " + sum + ", Time: " + (endTime - startTime) / 1_000_000 + " ms");
+public class NullPointerExample {
+    public static void main(String[] args) {
+        Integer myInteger = null;
+        try {
+            int primitiveValue = myInteger; // Autounboxing a null Integer will throw NPE
+            System.out.println("This line will not be reached: " + primitiveValue);
+        } catch (NullPointerException e) {
+            System.out.println("Caught NullPointerException: " + e.getMessage());
+            System.out.println("Reason: Attempted to unbox a null wrapper object.");
+        }
 
-startTime = System.nanoTime();
-long primitiveSum = 0L; // Using primitive long
-for (long i = 0; i < 1_000_000; i++) {
-    primitiveSum += i;
-}
-endTime = System.nanoTime();
-System.out.println("Primitive sum: " + primitiveSum + ", Time: " + (endTime - startTime) / 1_000_000 + " ms");
+        Boolean myBoolean = null;
+        if (myBoolean != null && myBoolean) { // Good practice: check for null first
+            System.out.println("This won't print if myBoolean is null.");
+        } else {
+            System.out.println("myBoolean is null or false.");
+        }
 
-// You will typically see the primitive version run significantly faster.
+        // What if myBoolean is directly used in a conditional?
+        try {
+            if (myBoolean) { // Direct usage without null check -> NPE
+                System.out.println("This line will also not be reached.");
+            }
+        } catch (NullPointerException e) {
+            System.out.println("Caught NullPointerException again: " + e.getMessage());
+            System.out.println("Reason: Autounboxing of null Boolean in conditional.");
+        }
+    }
+}
 ```
 
-### 5.3. Object Identity (`==`) vs. Value Equality (`.equals()`)
+**Input:**
+(No direct input required.)
 
-When comparing wrapper objects, remember that `==` checks for object identity (if they refer to the *same* object in memory), while `.equals()` checks for value equality.
+**Output:**
 
-Due to the **`Integer` cache** (and similarly for `Byte`, `Short`, `Long`, `Character`), wrapper objects for small, frequently used values (`-128` to `127` for `Integer` and `Long`, `\u0000` to `\u007f` for `Character`) might refer to the *same* cached object. Values outside this range will typically create new objects.
+```
+Caught NullPointerException: null
+Reason: Attempted to unbox a null wrapper object.
+myBoolean is null or false.
+Caught NullPointerException again: null
+Reason: Autounboxing of null Boolean in conditional.
+```
 
-**Example:**
+### 5.3. Object Identity vs. Value Equality (`==` vs. `equals()`)
+
+When comparing wrapper objects, `==` checks for object identity (if they are the *same object in memory*), while `equals()` checks for value equality. Due to caching of small integer values (`-128` to `127`) by the `Integer.valueOf()` method, `==` can sometimes produce misleading results.
+
+**Example: `==` with Integer Caching**
 
 ```java
-Integer a = 100; // Autoboxed, likely from cache
-Integer b = 100; // Autoboxed, likely from cache
-System.out.println("a == b (100): " + (a == b));           // true (cached values)
-System.out.println("a.equals(b): " + a.equals(b)); // true (value equality)
+public class IntegerComparisonExample {
+    public static void main(String[] args) {
+        // Values within the cached range (-128 to 127)
+        Integer i1 = 100; // Autoboxed (likely from cache)
+        Integer i2 = 100; // Autoboxed (likely from cache)
+        System.out.println("i1 == i2 (100): " + (i1 == i2)); // True (due to caching)
+        System.out.println("i1.equals(i2) (100): " + i1.equals(i2)); // True (value comparison)
 
-Integer c = 200; // Autoboxed, likely new object
-Integer d = 200; // Autoboxed, likely new object
-System.out.println("c == d (200): " + (c == d));           // false (new objects)
-System.out.println("c.equals(d): " + c.equals(d)); // true (value equality)
+        // Values outside the cached range
+        Integer i3 = 200; // Autoboxed (new object created)
+        Integer i4 = 200; // Autoboxed (new object created)
+        System.out.println("i3 == i4 (200): " + (i3 == i4)); // False (different objects)
+        System.out.println("i3.equals(i4) (200): " + i3.equals(i4)); // True (value comparison)
 
-// Always use .equals() for comparing wrapper object values!
+        // Always use .equals() for value comparison of wrapper objects!
+        System.out.println("Recommendation: Always use .equals() for value comparison.");
+    }
+}
 ```
 
----
+**Input:**
+(No direct input required.)
 
-## 6. Best Practices
+**Output:**
 
-*   **Be Mindful of `NullPointerException`:** Always assume a wrapper object can be `null` when performing auto-unboxing, especially if it comes from external input or a nullable source. Add explicit `null` checks where necessary.
-*   **Choose Primitives When Possible:** If you don't need the object-oriented features (like methods, nullability, or use in collections/generics), prefer primitive types for better performance and memory efficiency.
-*   **Use `.equals()` for Value Comparison:** Always use the `.equals()` method to compare the values of wrapper objects, never `==`, unless you specifically intend to check for object identity and understand the implications of caching.
-*   **Understand Performance Trade-offs:** While autoboxing/unboxing are convenient, be aware of their potential performance implications in tight loops or large-scale data processing. Optimize by using primitives if a bottleneck is identified.
+```
+i1 == i2 (100): true
+i1.equals(i2) (100): true
+i3 == i4 (200): false
+i3.equals(i4) (200): true
+Recommendation: Always use .equals() for value comparison.
+```
 
----
+## Summary
 
-## Conclusion
-
-Autoboxing and Unboxing are powerful features introduced in Java 5 that significantly simplify the development process by automatically handling the conversions between primitive types and their wrapper class objects. They make code cleaner, more readable, and reduce boilerplate. However, developers must be aware of their potential pitfalls, particularly `NullPointerException` and performance implications, to write robust and efficient Java applications.
+Autoboxing and unboxing are powerful features in Java that provide convenience and allow primitives to interact seamlessly with object-oriented constructs (especially Generics and Collections). However, it's crucial to be aware of the potential performance implications and, more importantly, the risk of `NullPointerException` when dealing with unboxing `null` wrapper objects. Always consider checking for `null` before unboxing.

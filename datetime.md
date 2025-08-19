@@ -1,188 +1,167 @@
-The concept of `datetime` in Java has evolved significantly over the years. Before Java 8, handling dates and times was notoriously cumbersome and error-prone. With Java 8, a new, much-improved Date and Time API (JSR 310, inspired by Joda-Time) was introduced in the `java.time` package, fundamentally changing how we work with dates and times.
+Java's date and time handling has evolved significantly. Before Java 8, it was notoriously clunky and error-prone with `java.util.Date` and `java.util.Calendar`. Java 8 introduced the new `java.time` package (JSR-310), which provides a much more robust, immutable, and intuitive API for working with dates and times.
 
-This guide will cover both:
-1.  **The Legacy Date/Time API (Pre-Java 8):** `java.util.Date`, `java.util.Calendar`, `java.text.SimpleDateFormat`.
-2.  **The Modern Date/Time API (Java 8+):** Classes in the `java.time` package.
+This guide will cover both the old and new APIs, focusing heavily on the `java.time` package as it's the recommended approach for modern Java development.
 
 ---
 
-# Date and Time in Java
+# Java Date and Time APIs
 
-## 1. The Legacy Date/Time API (Pre-Java 8)
+## 1. Introduction
 
-Before Java 8, working with dates and times was often a source of frustration for developers due to its mutable nature, lack of thread-safety, and confusing API design (e.g., months starting from 0).
+Working with dates and times in programming often involves challenges like:
+*   **Time Zones:** Converting between different time zones, handling daylight saving.
+*   **Mutability:** Old date objects could be modified after creation, leading to unexpected behavior.
+*   **Thread Safety:** Mutable objects are not inherently thread-safe.
+*   **Clarity:** Ambiguous APIs (e.g., month starting from 0, or `Date` representing an instant, not a date).
+*   **Calculations:** Performing arithmetic operations (add days, find difference) correctly.
 
-### 1.1 `java.util.Date`
+The `java.time` package in Java 8+ addresses these issues with a well-designed, immutable, and thread-safe set of classes.
 
-Represents a specific instant in time, with millisecond precision. It's essentially a wrapper around a `long` value representing milliseconds since the [Unix epoch](https://en.wikipedia.org/wiki/Unix_time) (January 1, 1970, 00:00:00 GMT).
+## 2. The Old Date and Time API (Pre-Java 8)
 
-**Problems:**
-*   **Mutable:** Its state can be changed after creation, leading to unexpected side effects, especially in multi-threaded environments.
-*   **Poor API:** Many methods are deprecated (e.g., `getYear()`, `getMonth()`, `getDate()`) because they don't follow modern API design principles and were confusing.
-*   **No Timezone Information:** It doesn't inherently store timezone information, leading to ambiguity. `toString()` uses the default timezone of the JVM.
+The classes `java.util.Date` and `java.util.Calendar` were the primary way to handle dates and times before Java 8. They are largely deprecated for new code due to their significant shortcomings.
 
-**Examples:**
+### 2.1 `java.util.Date`
+
+*   Represents a specific instant in time (milliseconds since the Unix epoch - January 1, 1970, 00:00:00 GMT).
+*   Mutable, meaning its value can be changed after creation. This leads to thread-safety issues and unpredictable behavior.
+*   Methods like `getYear()`, `getMonth()`, `getDay()` are deprecated because they don't account for time zones properly and are confusing (e.g., months are 0-indexed).
+
+#### Example: `java.util.Date`
 
 ```java
 import java.util.Date;
 
-public class LegacyDateExample {
+public class OldDateExample {
     public static void main(String[] args) {
-        // 1. Creating a Date object
-        Date now = new Date(); // Current date and time
-        System.out.println("Current Date (now): " + now);
+        System.out.println("--- java.util.Date Example ---");
 
-        // 2. Creating a Date from milliseconds
-        long milliseconds = 1678886400000L; // March 15, 2023 00:00:00 GMT
+        // 1. Creating a Date object for the current instant
+        Date currentDate = new Date();
+        System.out.println("Current Date: " + currentDate);
+
+        // 2. Creating a Date from milliseconds (since epoch)
+        long milliseconds = 1678886400000L; // March 15, 2023 12:00:00 PM GMT
         Date specificDate = new Date(milliseconds);
-        System.out.println("Specific Date (from millis): " + specificDate);
+        System.out.println("Specific Date from millis: " + specificDate);
 
-        // 3. Comparison
-        Date futureDate = new Date(now.getTime() + 3600 * 1000); // 1 hour from now
-        System.out.println("Is now before futureDate? " + now.before(futureDate)); // true
-        System.out.println("Is futureDate after now? " + futureDate.after(now));   // true
+        // 3. Mutability demonstration (DO NOT DO THIS IN PRODUCTION CODE)
+        Date anotherDate = new Date();
+        System.out.println("Before modification: " + anotherDate);
+        anotherDate.setTime(0); // Sets it to Jan 1, 1970, 00:00:00 GMT
+        System.out.println("After modification:  " + anotherDate);
 
-        // 4. Getting time in milliseconds
-        System.out.println("Milliseconds since epoch for now: " + now.getTime());
-
-        // Note: Methods like getYear(), getMonth() are deprecated and should be avoided.
-        // They return values relative to 1900 and 0-indexed months, respectively.
+        // Note: Many useful methods like getYear(), getMonth() are deprecated
+        // due to issues with time zones and their confusing nature.
     }
 }
 ```
 
-### 1.2 `java.util.Calendar`
+**Output:**
 
-An abstract base class for converting between a `Date` object and a set of integer fields such as `YEAR`, `MONTH`, `DAY_OF_MONTH`, `HOUR`, etc. It was designed to address some of the shortcomings of `Date`, especially for date manipulation and component extraction.
+```
+--- java.util.Date Example ---
+Current Date: Wed May 15 10:30:45 EDT 2024 // (Actual date/time will vary)
+Specific Date from millis: Wed Mar 15 08:00:00 EDT 2023 // (Actual timezone may vary)
+Before modification: Wed May 15 10:30:45 EDT 2024 // (Actual date/time will vary)
+After modification:  Wed Dec 31 19:00:00 EST 1969 // (Actual timezone may vary, 0 GMT is previous day in EST)
+```
 
-**Problems:**
-*   **Mutable:** Like `Date`, it's mutable.
-*   **Complex API:** Using integer constants (`Calendar.MONTH`, `Calendar.DAY_OF_WEEK`) makes the code less readable.
-*   **0-indexed Months:** `Calendar.JANUARY` is 0, `Calendar.FEBRUARY` is 1, etc., a common source of bugs.
-*   **Not Thread-Safe:** Concurrent modification issues can arise.
+### 2.2 `java.util.Calendar`
 
-**Examples:**
+*   An abstract class providing methods for converting between a `Date` object and a set of integer fields such as year, month, day, hour, and minute.
+*   More powerful than `Date` for date/time arithmetic and field manipulation.
+*   Still mutable and cumbersome to use (e.g., month is 0-indexed, but day of month starts at 1; constants for fields are often hard to remember).
+*   Inherently complex due to dealing with locales, time zones, and different calendar systems.
+
+#### Example: `java.util.Calendar`
 
 ```java
 import java.util.Calendar;
 import java.util.Date;
 
-public class LegacyCalendarExample {
+public class OldCalendarExample {
     public static void main(String[] args) {
-        // 1. Getting a Calendar instance (usually GregorianCalendar)
-        Calendar calendar = Calendar.getInstance(); // Current date and time
+        System.out.println("--- java.util.Calendar Example ---");
+
+        // 1. Get a Calendar instance (usually GregorianCalendar)
+        Calendar calendar = Calendar.getInstance();
         System.out.println("Current Calendar: " + calendar.getTime());
 
-        // 2. Setting specific date and time components
-        calendar.set(2023, Calendar.OCTOBER, 26, 10, 30, 0); // Month is 0-indexed (OCTOBER is 9)
-        System.out.println("Set Date: " + calendar.getTime());
+        // 2. Set specific date/time fields
+        calendar.set(2023, Calendar.MARCH, 15, 10, 30, 0); // Year, Month (0-indexed), Day, Hour, Minute, Second
+        System.out.println("Set Calendar Date: " + calendar.getTime());
 
-        // 3. Getting specific components
-        System.out.println("Year: " + calendar.get(Calendar.YEAR));
-        System.out.println("Month (0-indexed): " + calendar.get(Calendar.MONTH)); // 9 for October
-        System.out.println("Day of Month: " + calendar.get(Calendar.DAY_OF_MONTH));
-        System.out.println("Hour of Day (24-hour): " + calendar.get(Calendar.HOUR_OF_DAY));
-
-        // 4. Adding/Subtracting time
+        // 3. Add or subtract time
         calendar.add(Calendar.DAY_OF_MONTH, 5); // Add 5 days
-        System.out.println("Date after adding 5 days: " + calendar.getTime());
+        System.out.println("After adding 5 days: " + calendar.getTime());
 
         calendar.add(Calendar.HOUR, -2); // Subtract 2 hours
-        System.out.println("Date after subtracting 2 hours: " + calendar.getTime());
+        System.out.println("After subtracting 2 hours: " + calendar.getTime());
 
-        // 5. Converting Calendar to Date
-        Date dateFromCalendar = calendar.getTime();
-        System.out.println("Date from Calendar: " + dateFromCalendar);
+        // 4. Get specific fields
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH); // 0-indexed month
+        int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK); // Sunday is 1, Monday is 2, etc.
+
+        System.out.println("Year: " + year);
+        System.out.println("Month (0-indexed): " + month);
+        System.out.println("Day of Month: " + dayOfMonth);
+        System.out.println("Day of Week (1=Sunday): " + dayOfWeek);
+
+        // 5. Convert Calendar to Date
+        Date calendarToDate = calendar.getTime();
+        System.out.println("Calendar to Date: " + calendarToDate);
     }
 }
 ```
 
-### 1.3 `java.text.SimpleDateFormat`
+**Output:**
 
-Used for formatting dates into strings and parsing strings into `Date` objects. It allows you to define custom date and time patterns.
-
-**Problems:**
-*   **Not Thread-Safe:** Multiple threads using the same `SimpleDateFormat` instance concurrently can lead to incorrect results. It's often advised to create a new instance for each thread or use `ThreadLocal`.
-*   **Verbose:** Requires creating an instance and handling `ParseException`.
-*   **Pattern Letters:** The pattern letters (e.g., `yyyy`, `MM`, `dd`, `HH`, `mm`, `ss`) can be tricky to remember.
-
-**Examples:**
-
-```java
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-public class LegacyDateFormatExample {
-    public static void main(String[] args) {
-        Date now = new Date();
-
-        // 1. Formatting Date to String
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss EEEE"); // EEEE for full day name
-        String formattedDate = formatter.format(now);
-        System.out.println("Formatted Date: " + formattedDate);
-
-        // Custom format
-        SimpleDateFormat customFormatter = new SimpleDateFormat("dd/MM/yyyy 'at' hh:mm a"); // 'a' for AM/PM
-        String customFormattedDate = customFormatter.format(now);
-        System.out.println("Custom Formatted Date: " + customFormattedDate);
-
-        // 2. Parsing String to Date
-        String dateString = "2023-01-15 14:30:00";
-        SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        try {
-            Date parsedDate = parser.parse(dateString);
-            System.out.println("Parsed Date: " + parsedDate);
-        } catch (ParseException e) {
-            System.err.println("Error parsing date: " + e.getMessage());
-        }
-
-        // 3. Thread-safety warning (demonstration, not actual multi-threading)
-        // In a real multi-threaded scenario, this single instance would be problematic.
-        // It's generally better to create a new instance per use or use ThreadLocal.
-        SimpleDateFormat threadUnsafeFormatter = new SimpleDateFormat("yyyy-MM-dd");
-        String date1 = threadUnsafeFormatter.format(new Date(1672531200000L)); // Jan 1, 2023
-        String date2 = threadUnsafeFormatter.format(new Date(1675209600000L)); // Feb 1, 2023
-        System.out.println("Thread-unsafe dates: " + date1 + ", " + date2);
-    }
-}
+```
+--- java.util.Calendar Example ---
+Current Calendar: Wed May 15 10:30:45 EDT 2024 // (Actual date/time will vary)
+Set Calendar Date: Wed Mar 15 10:30:00 EDT 2023 // (Actual timezone may vary)
+After adding 5 days: Mon Mar 20 10:30:00 EDT 2023
+After subtracting 2 hours: Mon Mar 20 08:30:00 EDT 2023
+Year: 2023
+Month (0-indexed): 2
+Day of Month: 20
+Day of Week (1=Sunday): 2
+Calendar to Date: Mon Mar 20 08:30:00 EDT 2023
 ```
 
----
+### 2.3 Problems with the Old API Summary
 
-## 2. The Modern Date/Time API (Java 8+) - `java.time` Package
+*   **Mutability:** Objects can be changed after creation, leading to side effects.
+*   **Not Thread-Safe:** Not suitable for concurrent environments.
+*   **Poor Design:**
+    *   Months start from 0 (`JANUARY = 0`).
+    *   Days of the week start from 1 (`SUNDAY = 1`).
+    *   No clear separation between date, time, and date-time.
+    *   Poor handling of time zones (e.g., `Date`'s `toString()` uses default time zone).
+*   **Error-Prone:** Easy to introduce subtle bugs.
 
-The `java.time` package was introduced to address all the issues of the legacy API. It offers a comprehensive set of classes for handling dates, times, instants, and durations with better design principles.
+## 3. The New Date and Time API (Java 8+) - `java.time`
 
-**Key Design Principles:**
-*   **Immutability:** All core classes in `java.time` are immutable, making them inherently thread-safe and easier to reason about. Operations like `plusDays()` return a *new* object.
-*   **Clarity:** Clear separation between date-only (`LocalDate`), time-only (`LocalTime`), date-time (`LocalDateTime`), and date-time with timezone (`ZonedDateTime`).
-*   **Fluency:** Method chaining (e.g., `now().plusDays(1).plusHours(2)`) makes code more readable.
-*   **Domain-driven:** Classes are named clearly according to their purpose.
-*   **ISO 8601 Compliance:** Most classes adhere to the ISO 8601 standard for date and time representation (e.g., `2023-10-26T14:30:00`).
+The `java.time` package, inspired by Joda-Time, provides a comprehensive and well-designed API.
 
-### Core Classes:
+**Key Features:**
 
-*   **`LocalDate`**: A date without a time or timezone (e.g., `2023-10-26`).
-*   **`LocalTime`**: A time without a date or timezone (e.g., `14:30:00`).
-*   **`LocalDateTime`**: A date-time without a timezone (e.g., `2023-10-26T14:30:00`).
-*   **`Instant`**: A point in time on the timeline (e.g., `2023-10-26T12:00:00Z`). Primarily for machine-readable time, often used for timestamps.
-*   **`ZonedDateTime`**: A date-time with a timezone (e.g., `2023-10-26T14:30:00-04:00[America/New_York]`).
-*   **`OffsetDateTime`**: A date-time with a timezone offset from UTC/Greenwich (e.g., `2023-10-26T14:30:00-04:00`). Useful for database storage where the specific timezone isn't needed, but the offset is.
-*   **`Duration`**: A time-based amount of time, like '3 hours, 30 minutes'.
-*   **`Period`**: A date-based amount of time, like '2 years, 3 months, 5 days'.
-*   **`DateTimeFormatter`**: For formatting and parsing date-time objects (thread-safe!).
-*   **`TemporalAdjusters`**: For complex date adjustments (e.g., "next Sunday", "last day of the month").
-*   **`ZoneId`**: Represents a timezone (e.g., `America/New_York`).
-*   **`ZoneOffset`**: Represents a fixed offset from Greenwich (e.g., `-04:00`).
+*   **Immutability:** All core classes are immutable and thread-safe. Operations return new instances.
+*   **Clear Definitions:** Specific classes for date-only, time-only, date-time (with/without time zone), and instants.
+*   **Fluent API:** Method chaining for easier manipulation.
+*   **Time Zone Support:** Explicit and robust handling of time zones.
+*   **Clarity:** Months are `Month.JANUARY` or `1`, not `0`. Days of week are `DayOfWeek.MONDAY`.
+*   **Calculations:** Easy and intuitive methods for adding, subtracting, and comparing time.
 
----
+### 3.1 Core Classes
 
-### 2.1 `LocalDate` - Date Without Time or Timezone
+#### 3.1.1 `LocalDate`
 
-**Purpose:** Represents a date (year, month, day) without a time of day or a time-zone.
-
-**Examples:**
+*   Represents a date without time or time zone information.
+*   Example: `2024-05-15`
 
 ```java
 import java.time.DayOfWeek;
@@ -191,30 +170,23 @@ import java.time.Month;
 
 public class LocalDateExample {
     public static void main(String[] args) {
-        // 1. Current Date
+        System.out.println("--- LocalDate Example ---");
+
+        // 1. Get current date
         LocalDate today = LocalDate.now();
-        System.out.println("Today: " + today); // e.g., 2023-10-26
+        System.out.println("Today's Date: " + today);
 
-        // 2. Specific Date
-        LocalDate specificDate = LocalDate.of(2023, 1, 15); // Year, Month (enum), Day
-        LocalDate anotherSpecificDate = LocalDate.of(2024, Month.FEBRUARY, 29); // Using Month enum
+        // 2. Create a specific date
+        LocalDate specificDate = LocalDate.of(2023, Month.MARCH, 15);
+        // or LocalDate specificDate = LocalDate.of(2023, 3, 15);
         System.out.println("Specific Date: " + specificDate);
-        System.out.println("Another Specific Date (Leap Year): " + anotherSpecificDate);
 
-        // 3. Parsing a String to LocalDate (ISO 8601 format by default)
-        LocalDate parsedDate = LocalDate.parse("2022-12-25");
+        // 3. Parse a date string
+        String dateString = "2024-10-26";
+        LocalDate parsedDate = LocalDate.parse(dateString);
         System.out.println("Parsed Date: " + parsedDate);
 
-        // 4. Getting Date Components
-        System.out.println("Year: " + today.getYear());
-        System.out.println("Month: " + today.getMonth());             // OCTOBER (enum)
-        System.out.println("Month value: " + today.getMonthValue()); // 10
-        System.out.println("Day of Month: " + today.getDayOfMonth());
-        System.out.println("Day of Week: " + today.getDayOfWeek());   // THURSDAY (enum)
-        System.out.println("Day of Year: " + today.getDayOfYear());
-        System.out.println("Is Leap Year? " + today.isLeapYear());
-
-        // 5. Modifying Dates (returns new instances because LocalDate is immutable)
+        // 4. Manipulate dates (immutable operations)
         LocalDate tomorrow = today.plusDays(1);
         System.out.println("Tomorrow: " + tomorrow);
 
@@ -224,24 +196,55 @@ public class LocalDateExample {
         LocalDate nextYearSameDay = today.plusYears(1);
         System.out.println("Next Year Same Day: " + nextYearSameDay);
 
-        // Setting a specific field
         LocalDate firstDayOfNextMonth = today.plusMonths(1).withDayOfMonth(1);
-        System.out.println("First day of next month: " + firstDayOfNextMonth);
+        System.out.println("First Day of Next Month: " + firstDayOfNextMonth);
 
-        // 6. Comparison
-        LocalDate christmas2023 = LocalDate.of(2023, 12, 25);
-        System.out.println("Is today before Christmas 2023? " + today.isBefore(christmas2023));
-        System.out.println("Is today after Christmas 2023? " + today.isAfter(christmas2023));
-        System.out.println("Is today equal to 2023-10-26? " + today.isEqual(LocalDate.of(2023, 10, 26)));
+        // 5. Get date components
+        int year = today.getYear();
+        Month month = today.getMonth();
+        int dayOfMonth = today.getDayOfMonth();
+        DayOfWeek dayOfWeek = today.getDayOfWeek();
+        int dayOfYear = today.getDayOfYear();
+
+        System.out.println("Year: " + year);
+        System.out.println("Month: " + month);
+        System.out.println("Day of Month: " + dayOfMonth);
+        System.out.println("Day of Week: " + dayOfWeek);
+        System.out.println("Day of Year: " + dayOfYear);
+
+        // 6. Compare dates
+        System.out.println("Is today before specificDate? " + today.isBefore(specificDate));
+        System.out.println("Is today after parsedDate? " + today.isAfter(parsedDate));
+        System.out.println("Is today equal to itself? " + today.isEqual(LocalDate.now())); // Check for exact equality
     }
 }
 ```
 
-### 2.2 `LocalTime` - Time Without Date or Timezone
+**Output:**
 
-**Purpose:** Represents a time of day without a date or a time-zone.
+```
+--- LocalDate Example ---
+Today's Date: 2024-05-15 // (Actual date will vary)
+Specific Date: 2023-03-15
+Parsed Date: 2024-10-26
+Tomorrow: 2024-05-16
+Last Month: 2024-04-15
+Next Year Same Day: 2025-05-15
+First Day of Next Month: 2024-06-01
+Year: 2024
+Month: MAY
+Day of Month: 15
+Day of Week: WEDNESDAY
+Day of Year: 136
+Is today before specificDate? false
+Is today after parsedDate? false
+Is today equal to itself? true
+```
 
-**Examples:**
+#### 3.1.2 `LocalTime`
+
+*   Represents a time without date or time zone information.
+*   Example: `14:30:15.123`
 
 ```java
 import java.time.LocalTime;
@@ -249,215 +252,294 @@ import java.time.temporal.ChronoUnit;
 
 public class LocalTimeExample {
     public static void main(String[] args) {
-        // 1. Current Time
-        LocalTime now = LocalTime.now();
-        System.out.println("Current Time: " + now); // e.g., 14:30:45.123456789
+        System.out.println("--- LocalTime Example ---");
 
-        // 2. Specific Time
-        LocalTime specificTime = LocalTime.of(10, 30, 45); // Hour, Minute, Second
-        LocalTime specificTimeNano = LocalTime.of(10, 30, 45, 500_000_000); // Hour, Minute, Second, Nanosecond
+        // 1. Get current time
+        LocalTime now = LocalTime.now();
+        System.out.println("Current Time: " + now);
+
+        // 2. Create a specific time
+        LocalTime specificTime = LocalTime.of(14, 30, 15); // Hour, Minute, Second
         System.out.println("Specific Time: " + specificTime);
+
+        // 3. Create a specific time with nanoseconds
+        LocalTime specificTimeNano = LocalTime.of(10, 20, 30, 123456789); // Hour, Minute, Second, Nanosecond
         System.out.println("Specific Time with Nanos: " + specificTimeNano);
 
-        // 3. Parsing a String to LocalTime (ISO 8601 format by default)
-        LocalTime parsedTime = LocalTime.parse("23:59:59");
+        // 4. Parse a time string
+        String timeString = "09:45:00";
+        LocalTime parsedTime = LocalTime.parse(timeString);
         System.out.println("Parsed Time: " + parsedTime);
 
-        // 4. Getting Time Components
-        System.out.println("Hour: " + now.getHour());
-        System.out.println("Minute: " + now.getMinute());
-        System.out.println("Second: " + now.getSecond());
-        System.out.println("Nanosecond: " + now.getNano());
+        // 5. Manipulate times (immutable operations)
+        LocalTime futureTime = now.plusHours(2).minusMinutes(15);
+        System.out.println("Future Time: " + futureTime);
 
-        // 5. Modifying Times (returns new instances)
-        LocalTime oneHourLater = now.plusHours(1);
-        System.out.println("One Hour Later: " + oneHourLater);
+        LocalTime truncatedToHour = now.truncatedTo(ChronoUnit.HOURS);
+        System.out.println("Truncated to Hour: " + truncatedToHour);
 
-        LocalTime fifteenMinutesAgo = now.minusMinutes(15);
-        System.out.println("Fifteen Minutes Ago: " + fifteenMinutesAgo);
+        // 6. Get time components
+        int hour = now.getHour();
+        int minute = now.getMinute();
+        int second = now.getSecond();
+        int nano = now.getNano();
 
-        LocalTime truncatedToSeconds = now.truncatedTo(ChronoUnit.SECONDS); // Remove nanos
-        System.out.println("Truncated to Seconds: " + truncatedToSeconds);
+        System.out.println("Hour: " + hour);
+        System.out.println("Minute: " + minute);
+        System.out.println("Second: " + second);
+        System.out.println("Nanosecond: " + nano);
 
-        // 6. Comparison
-        LocalTime morning = LocalTime.of(9, 0);
-        LocalTime evening = LocalTime.of(18, 0);
-        System.out.println("Is " + morning + " before " + evening + "? " + morning.isBefore(evening));
-        System.out.println("Is " + evening + " after " + morning + "? " + evening.isAfter(morning));
+        // 7. Compare times
+        System.out.println("Is now before specificTime? " + now.isBefore(specificTime));
+        System.out.println("Is now after parsedTime? " + now.isAfter(parsedTime));
     }
 }
 ```
 
-### 2.3 `LocalDateTime` - Date and Time Without Timezone
+**Output:**
 
-**Purpose:** Represents a date and time without any timezone information. It's often used when you store date-time information in a database without considering specific timezones.
+```
+--- LocalTime Example ---
+Current Time: 10:30:45.123456789 // (Actual time will vary)
+Specific Time: 14:30:15
+Specific Time with Nanos: 10:20:30.123456789
+Parsed Time: 09:45
+Future Time: 12:15:45.123456789
+Truncated to Hour: 10:00
+Hour: 10
+Minute: 30
+Second: 45
+Nanosecond: 123456789
+Is now before specificTime? true
+Is now after parsedTime? true
+```
 
-**Examples:**
+#### 3.1.3 `LocalDateTime`
+
+*   Represents a date and time without any time zone information.
+*   Useful when dealing with dates and times in a single, consistent time zone (e.g., UTC) or when the time zone context is handled separately.
+*   Example: `2024-05-15T10:30:45`
 
 ```java
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.Month;
 
 public class LocalDateTimeExample {
     public static void main(String[] args) {
-        // 1. Current Date and Time
-        LocalDateTime now = LocalDateTime.now();
-        System.out.println("Current LocalDateTime: " + now); // e.g., 2023-10-26T14:30:45.123
+        System.out.println("--- LocalDateTime Example ---");
 
-        // 2. Specific Date and Time
-        LocalDateTime specificDateTime = LocalDateTime.of(2023, Month.JANUARY, 1, 10, 30, 0);
+        // 1. Get current date and time
+        LocalDateTime now = LocalDateTime.now();
+        System.out.println("Current LocalDateTime: " + now);
+
+        // 2. Create a specific date and time
+        LocalDateTime specificDateTime = LocalDateTime.of(2023, 3, 15, 14, 30, 0);
         System.out.println("Specific LocalDateTime: " + specificDateTime);
 
-        // 3. Combining LocalDate and LocalTime
-        LocalDate date = LocalDate.of(2024, 7, 20);
-        LocalTime time = LocalTime.of(16, 45);
+        // 3. Combine LocalDate and LocalTime
+        LocalDate date = LocalDate.of(2025, 1, 1);
+        LocalTime time = LocalTime.of(23, 59, 59);
         LocalDateTime combinedDateTime = LocalDateTime.of(date, time);
         System.out.println("Combined LocalDateTime: " + combinedDateTime);
 
-        // 4. Parsing a String to LocalDateTime (ISO 8601 format by default: YYYY-MM-DDTHH:MM:SS)
-        LocalDateTime parsedDateTime = LocalDateTime.parse("2023-05-10T08:00:00");
+        // 4. Parse a date-time string
+        String dateTimeString = "2024-07-20T18:00:00";
+        LocalDateTime parsedDateTime = LocalDateTime.parse(dateTimeString);
         System.out.println("Parsed LocalDateTime: " + parsedDateTime);
 
-        // 5. Getting Components (similar to LocalDate and LocalTime)
-        System.out.println("Year: " + now.getYear());
-        System.out.println("Hour: " + now.getHour());
+        // 5. Manipulate date-time
+        LocalDateTime nextWeekSameTime = now.plusWeeks(1);
+        System.out.println("Next Week Same Time: " + nextWeekSameTime);
 
-        // 6. Modifying Date and Time
-        LocalDateTime futureDateTime = now.plusDays(7).minusHours(3);
-        System.out.println("Future LocalDateTime: " + futureDateTime);
+        LocalDateTime previousMonthHourLater = now.minusMonths(1).plusHours(1);
+        System.out.println("Previous Month Hour Later: " + previousMonthHourLater);
 
-        // 7. Extracting LocalDate or LocalTime
+        // 6. Extract LocalDate and LocalTime
         LocalDate extractedDate = now.toLocalDate();
         LocalTime extractedTime = now.toLocalTime();
         System.out.println("Extracted Date: " + extractedDate);
         System.out.println("Extracted Time: " + extractedTime);
 
-        // 8. Comparison
-        LocalDateTime pastDateTime = LocalDateTime.of(2023, 1, 1, 0, 0);
-        System.out.println("Is " + now + " before " + pastDateTime + "? " + now.isBefore(pastDateTime));
+        // 7. Compare
+        System.out.println("Is now before specificDateTime? " + now.isBefore(specificDateTime));
+        System.out.println("Is now after parsedDateTime? " + now.isAfter(parsedDateTime));
     }
 }
 ```
 
-### 2.4 `Instant` - A Point in Time (Machine Readable)
+**Output:**
 
-**Purpose:** Represents a point in time, independent of any time-zone, in nanoseconds precision since the Unix epoch (January 1, 1970, 00:00:00 GMT). It's primarily for recording event timestamps.
+```
+--- LocalDateTime Example ---
+Current LocalDateTime: 2024-05-15T10:30:45.123456789 // (Actual date/time will vary)
+Specific LocalDateTime: 2023-03-15T14:30
+Combined LocalDateTime: 2025-01-01T23:59:59
+Parsed LocalDateTime: 2024-07-20T18:00
+Next Week Same Time: 2024-05-22T10:30:45.123456789
+Previous Month Hour Later: 2024-04-15T11:30:45.123456789
+Extracted Date: 2024-05-15
+Extracted Time: 10:30:45.123456789
+Is now before specificDateTime? false
+Is now after parsedDateTime? false
+```
 
-**Examples:**
+#### 3.1.4 `Instant`
+
+*   Represents a point in time on the timeline, often used to record event timestamps.
+*   Always stored as milliseconds/nanoseconds from the epoch (January 1, 1970, 00:00:00 GMT/UTC).
+*   Does not contain any timezone information itself, it's just a raw timestamp.
+
+```java
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+
+public class InstantExample {
+    public static void main(String[] args) {
+        System.out.println("--- Instant Example ---");
+
+        // 1. Get current instant (UTC)
+        Instant now = Instant.now();
+        System.out.println("Current Instant (UTC): " + now);
+
+        // 2. Create an instant from epoch milliseconds
+        long epochMilli = 1678886400000L; // March 15, 2023 12:00:00 PM GMT
+        Instant specificInstant = Instant.ofEpochMilli(epochMilli);
+        System.out.println("Specific Instant from millis: " + specificInstant);
+
+        // 3. Convert Instant to epoch milliseconds
+        long milliFromInstant = now.toEpochMilli();
+        System.out.println("Current Instant in milliseconds: " + milliFromInstant);
+
+        // 4. Manipulate Instant
+        Instant fiveHoursLater = now.plusSeconds(5 * 3600); // Add 5 hours
+        System.out.println("Five hours later: " + fiveHoursLater);
+
+        // 5. Convert Instant to ZonedDateTime (needs a ZoneId)
+        ZonedDateTime zonedDateTimeUTC = now.atZone(ZoneId.of("UTC"));
+        System.out.println("Instant in UTC Zone: " + zonedDateTimeUTC);
+
+        ZonedDateTime zonedDateTimeNY = now.atZone(ZoneId.of("America/New_York"));
+        System.out.println("Instant in New York Zone: " + zonedDateTimeNY);
+
+        // Important: Instant is purely UTC. When printed, it might implicitly convert to default system timezone,
+        // but its internal value is always based on epoch milliseconds in UTC.
+    }
+}
+```
+
+**Output:**
+
+```
+--- Instant Example ---
+Current Instant (UTC): 2024-05-15T14:30:45.123456789Z // (Actual instant will vary)
+Specific Instant from millis: 2023-03-15T12:00:00Z
+Current Instant in milliseconds: 1715783445123
+Five hours later: 2024-05-15T19:30:45.123456789Z
+Instant in UTC Zone: 2024-05-15T14:30:45.123456789Z[UTC]
+Instant in New York Zone: 2024-05-15T10:30:45.123456789-04:00[America/New_York]
+```
+*(Note: 'Z' in Instant output denotes UTC/Zulu time)*
+
+#### 3.1.5 `ZonedDateTime`
+
+*   Represents a date and time with a specific time zone.
+*   Crucial for applications that need to handle different geographical locations or complex time zone rules (like daylight saving).
+*   Example: `2024-05-15T10:30:45-04:00[America/New_York]`
 
 ```java
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-
-public class InstantExample {
-    public static void main(String[] args) {
-        // 1. Current Instant
-        Instant now = Instant.now();
-        System.out.println("Current Instant: " + now); // e.g., 2023-10-26T12:00:00.123456789Z (Z indicates UTC)
-
-        // 2. Instant from Epoch Milliseconds/Seconds
-        Instant fromMillis = Instant.ofEpochMilli(System.currentTimeMillis());
-        Instant fromSeconds = Instant.ofEpochSecond(1678886400); // March 15, 2023 00:00:00 GMT
-        System.out.println("Instant from Millis: " + fromMillis);
-        System.out.println("Instant from Seconds: " + fromSeconds);
-
-        // 3. Converting Instant to Epoch Milliseconds/Seconds
-        long epochMillis = now.toEpochMilli();
-        long epochSeconds = now.getEpochSecond(); // Truncates nanoseconds
-        System.out.println("Epoch Millis: " + epochMillis);
-        System.out.println("Epoch Seconds: " + epochSeconds);
-
-        // 4. Adding/Subtracting Time
-        Instant oneHourLater = now.plusSeconds(3600);
-        System.out.println("Instant one hour later: " + oneHourLater);
-
-        // 5. Converting Instant to LocalDateTime/ZonedDateTime (requires timezone)
-        LocalDateTime localDateTimeFromInstant = LocalDateTime.ofInstant(now, ZoneId.systemDefault());
-        System.out.println("LocalDateTime from Instant (System Default Zone): " + localDateTimeFromInstant);
-
-        LocalDateTime localDateTimeFromInstantNY = LocalDateTime.ofInstant(now, ZoneId.of("America/New_York"));
-        System.out.println("LocalDateTime from Instant (New York Zone): " + localDateTimeFromInstantNY);
-    }
-}
-```
-
-### 2.5 `ZonedDateTime` - Date, Time, and Timezone
-
-**Purpose:** Represents a complete date and time, including the time-zone information. It's the most comprehensive date-time class, crucial for handling daylight saving time (DST) and internationalization.
-
-**Examples:**
-
-```java
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Set;
 
 public class ZonedDateTimeExample {
     public static void main(String[] args) {
-        // 1. Current ZonedDateTime in System Default Timezone
+        System.out.println("--- ZonedDateTime Example ---");
+
+        // 1. Get current date and time in default system zone
         ZonedDateTime now = ZonedDateTime.now();
-        System.out.println("Current ZonedDateTime: " + now); // e.g., 2023-10-26T14:30:45.123-04:00[America/New_York]
+        System.out.println("Current ZonedDateTime (Default Zone): " + now);
 
-        // 2. Specific ZonedDateTime in a specific Timezone
+        // 2. Get current date and time in a specific zone
         ZoneId newYorkZone = ZoneId.of("America/New_York");
-        ZonedDateTime specificInNY = ZonedDateTime.of(2023, 1, 15, 10, 30, 0, 0, newYorkZone);
-        System.out.println("Specific ZonedDateTime in NY: " + specificInNY);
+        ZonedDateTime nowInNewYork = ZonedDateTime.now(newYorkZone);
+        System.out.println("Current ZonedDateTime (New York): " + nowInNewYork);
 
-        // From LocalDateTime and ZoneId
-        LocalDateTime localDateTime = LocalDateTime.of(2023, 10, 27, 9, 0);
-        ZonedDateTime zdtFromLocal = ZonedDateTime.of(localDateTime, ZoneId.of("Europe/London"));
-        System.out.println("ZonedDateTime from LocalDateTime + ZoneId: " + zdtFromLocal);
+        ZoneId londonZone = ZoneId.of("Europe/London");
+        ZonedDateTime nowInLondon = ZonedDateTime.now(londonZone);
+        System.out.println("Current ZonedDateTime (London): " + nowInLondon);
 
-        // 3. Changing Timezone (while keeping the same *moment* in time)
-        ZonedDateTime newYorkNow = ZonedDateTime.now(ZoneId.of("America/New_York"));
-        ZonedDateTime londonNow = newYorkNow.withZoneSameInstant(ZoneId.of("Europe/London"));
-        System.out.println("New York Now: " + newYorkNow);
-        System.out.println("Same moment in London: " + londonNow);
+        // 3. Create a specific ZonedDateTime
+        ZonedDateTime specificZDT = ZonedDateTime.of(2023, 10, 29, 2, 30, 0, 0, londonZone);
+        System.out.println("Specific ZonedDateTime (London, DST change): " + specificZDT);
+        // Note: If 2:30 AM on Oct 29, 2023 doesn't exist due to DST, it will adjust.
+        // For London 2023, DST ends on Oct 29 at 2AM, so 2:30AM is in the new offset.
 
-        // 4. Changing Timezone (while keeping the same *local* date-time)
-        // This is tricky and can lead to different instants, especially during DST changes.
-        ZonedDateTime fixedLocalInLondon = newYorkNow.withZoneSameLocal(ZoneId.of("Europe/London"));
-        System.out.println("Same local time in London: " + fixedLocalInLondon);
-        System.out.println("(Notice the instant/offset difference compared to 'Same moment in London')");
+        // 4. Convert LocalDateTime to ZonedDateTime
+        LocalDateTime localDateTime = LocalDateTime.of(2024, 6, 1, 10, 0); // No zone info
+        ZonedDateTime zdtFromLocal = localDateTime.atZone(newYorkZone);
+        System.out.println("LocalDateTime to ZonedDateTime (New York): " + zdtFromLocal);
 
+        // 5. Convert Instant to ZonedDateTime
+        Instant instant = Instant.now();
+        ZonedDateTime zdtFromInstant = instant.atZone(londonZone);
+        System.out.println("Instant to ZonedDateTime (London): " + zdtFromInstant);
 
-        // 5. Handling Daylight Saving Time (DST)
-        // Consider a date when DST changes (e.g., Nov 5, 2023, 2 AM in America/New_York, clock falls back)
-        ZoneId newYork = ZoneId.of("America/New_York");
-        // An invalid time during DST transition (clock skips forward)
-        try {
-            ZonedDateTime skippedTime = ZonedDateTime.of(2023, 3, 12, 2, 30, 0, 0, newYork);
-            System.out.println("Skipped time (should adjust): " + skippedTime); // Will adjust to 3:30 AM
-        } catch (java.time.DateTimeException e) {
-            System.out.println("Error for skipped time: " + e.getMessage()); // Or will adjust
-        }
+        // 6. Change time zone (converts the instant in time to the new zone's local time)
+        ZonedDateTime convertedToTokyo = nowInNewYork.withZoneSameInstant(ZoneId.of("Asia/Tokyo"));
+        System.out.println("New York time converted to Tokyo: " + convertedToTokyo);
 
-        // An ambiguous time during DST transition (clock falls back, 1 AM occurs twice)
-        try {
-            ZonedDateTime ambiguousTime = ZonedDateTime.of(2023, 11, 5, 1, 30, 0, 0, newYork);
-            System.out.println("Ambiguous time (default to first occurrence): " + ambiguousTime);
-            // You can control resolution for ambiguous times:
-            // .resolveLocal(ResolverStyle.STRICT) // Throws exception for ambiguous/skipped
-            // .resolveLocal(ResolverStyle.LENIENT) // Always resolve to valid (may be different instant)
-            // .resolveLocal(ResolverStyle.SMART) // Default, tries to do the right thing
-        } catch (java.time.DateTimeException e) {
-            System.out.println("Error for ambiguous time: " + e.getMessage());
-        }
+        // 7. Manipulate ZonedDateTime
+        ZonedDateTime tomorrowInNewYork = nowInNewYork.plusDays(1);
+        System.out.println("Tomorrow in New York: " + tomorrowInNewYork);
 
-        // 6. Converting to Instant
-        System.out.println("Instant from ZonedDateTime: " + now.toInstant());
+        // 8. Get time zone information
+        System.out.println("Zone ID: " + now.getZone());
+        System.out.println("Offset: " + now.getOffset());
+
+        // 9. List available time zone IDs
+        System.out.println("\n--- Sample Available Zone IDs ---");
+        Set<String> zoneIds = ZoneId.getAvailableZoneIds();
+        zoneIds.stream().limit(5).forEach(System.out::println);
+        System.out.println("...");
     }
 }
 ```
 
-### 2.6 `Duration` - Time-based Amount
+**Output:**
 
-**Purpose:** Represents a quantity of time in terms of seconds and nanoseconds. Useful for measuring time between two `Instant` or `LocalTime` objects.
+```
+--- ZonedDateTime Example ---
+Current ZonedDateTime (Default Zone): 2024-05-15T10:30:45.123456789-04:00[America/New_York] // (Actual date/time will vary)
+Current ZonedDateTime (New York): 2024-05-15T10:30:45.123456789-04:00[America/New_York]
+Current ZonedDateTime (London): 2024-05-15T15:30:45.123456789+01:00[Europe/London]
+Specific ZonedDateTime (London, DST change): 2023-10-29T02:30+00:00[Europe/London] // 2:30 AM *after* DST ends
+LocalDateTime to ZonedDateTime (New York): 2024-06-01T10:00-04:00[America/New_York]
+Instant to ZonedDateTime (London): 2024-05-15T15:30:45.123456789+01:00[Europe/London]
+New York time converted to Tokyo: 2024-05-16T00:30:45.123456789+09:00[Asia/Tokyo]
+Tomorrow in New York: 2024-05-16T10:30:45.123456789-04:00[America/New_York]
+Zone ID: America/New_York
+Offset: -04:00
 
-**Examples:**
+--- Sample Available Zone IDs ---
+Asia/Aden
+America/Cuiaba
+Etc/GMT+9
+Etc/GMT+8
+Africa/Nairobi
+...
+```
+
+### 3.2 Key Concepts and Utility Classes
+
+#### 3.2.1 `Duration`
+
+*   Measures a quantity of time in terms of seconds and nanoseconds.
+*   Used for time-based amounts (e.g., "3 hours, 20 minutes, 15 seconds").
+*   Best suited for `LocalTime` or `Instant` differences.
 
 ```java
 import java.time.Duration;
@@ -465,48 +547,53 @@ import java.time.Instant;
 import java.time.LocalTime;
 
 public class DurationExample {
-    public static void main(String[] args) throws InterruptedException {
-        // 1. Creating Durations
-        Duration threeHours = Duration.ofHours(3);
-        Duration fifteenMinutes = Duration.ofMinutes(15);
-        Duration tenSeconds = Duration.ofSeconds(10);
-        Duration fiftyMillis = Duration.ofMillis(50);
+    public static void main(String[] args) {
+        System.out.println("--- Duration Example ---");
 
-        System.out.println("Three Hours: " + threeHours);
-        System.out.println("Fifteen Minutes: " + fifteenMinutes);
+        // 1. Create a Duration
+        Duration duration = Duration.ofHours(2).plusMinutes(30);
+        System.out.println("Duration: " + duration); // PT2H30M (Parse Time 2 Hours 30 Minutes)
 
-        // 2. Calculating Duration between two points in time
-        LocalTime start = LocalTime.of(9, 0);
-        LocalTime end = LocalTime.of(12, 30);
-        Duration timeElapsed = Duration.between(start, end);
-        System.out.println("Time elapsed between " + start + " and " + end + ": " + timeElapsed);
+        // 2. Calculate duration between two LocalTime
+        LocalTime startTime = LocalTime.of(9, 0);
+        LocalTime endTime = LocalTime.of(17, 30);
+        Duration timeTaken = Duration.between(startTime, endTime);
+        System.out.println("Time taken (LocalTime): " + timeTaken);
+        System.out.println("Time taken in minutes: " + timeTaken.toMinutes());
 
+        // 3. Calculate duration between two Instants
         Instant startInstant = Instant.now();
-        Thread.sleep(2500); // Simulate some work
+        // Simulate some work
+        try { Thread.sleep(2000); } catch (InterruptedException e) {}
         Instant endInstant = Instant.now();
-        Duration workDuration = Duration.between(startInstant, endInstant);
-        System.out.println("Work duration: " + workDuration.toMillis() + " ms");
+        Duration elapsedInstant = Duration.between(startInstant, endInstant);
+        System.out.println("Elapsed time (Instant): " + elapsedInstant);
+        System.out.println("Elapsed time in milliseconds: " + elapsedInstant.toMillis());
 
-        // 3. Accessing components
-        System.out.println("Total seconds in timeElapsed: " + timeElapsed.getSeconds());
-        System.out.println("Total minutes in timeElapsed: " + timeElapsed.toMinutes());
-        System.out.println("Total hours in timeElapsed: " + timeElapsed.toHours());
-
-        // 4. Adding/Subtracting Durations
-        Duration combinedDuration = threeHours.plus(fifteenMinutes);
-        System.out.println("Combined Duration: " + combinedDuration);
-
-        Duration remainingDuration = combinedDuration.minus(Duration.ofHours(1));
-        System.out.println("Remaining Duration: " + remainingDuration);
+        // 4. Add duration to a time
+        LocalTime updatedTime = startTime.plus(duration);
+        System.out.println("Start time + Duration: " + updatedTime);
     }
 }
 ```
 
-### 2.7 `Period` - Date-based Amount
+**Output:**
 
-**Purpose:** Represents a quantity of time in terms of years, months, and days. Useful for measuring periods between two `LocalDate` objects.
+```
+--- Duration Example ---
+Duration: PT2H30M
+Time taken (LocalTime): PT8H30M
+Time taken in minutes: 510
+Elapsed time (Instant): PT2.000000XXXS // (Approx. 2 seconds)
+Elapsed time in milliseconds: 2000
+Start time + Duration: 11:30
+```
 
-**Examples:**
+#### 3.2.2 `Period`
+
+*   Measures a quantity of time in terms of years, months, and days.
+*   Used for date-based amounts (e.g., "2 years, 3 months, 5 days").
+*   Best suited for `LocalDate` differences.
 
 ```java
 import java.time.LocalDate;
@@ -514,44 +601,107 @@ import java.time.Period;
 
 public class PeriodExample {
     public static void main(String[] args) {
-        // 1. Creating Periods
-        Period fiveYears = Period.ofYears(5);
-        Period twoMonths = Period.ofMonths(2);
-        Period tenDays = Period.ofDays(10);
-        Period mixedPeriod = Period.of(1, 6, 15); // 1 year, 6 months, 15 days
+        System.out.println("--- Period Example ---");
 
-        System.out.println("Five Years: " + fiveYears);
-        System.out.println("Mixed Period: " + mixedPeriod);
+        // 1. Create a Period
+        Period period = Period.ofYears(1).plusMonths(6).plusDays(10);
+        System.out.println("Period: " + period); // P1Y6M10D (Period 1 Year 6 Months 10 Days)
 
-        // 2. Calculating Period between two dates
-        LocalDate startDate = LocalDate.of(2023, 1, 15);
-        LocalDate endDate = LocalDate.of(2025, 5, 20);
-        Period periodBetween = Period.between(startDate, endDate);
-        System.out.println("Period between " + startDate + " and " + endDate + ": " + periodBetween);
+        // 2. Calculate period between two LocalDates
+        LocalDate startDate = LocalDate.of(2020, 1, 15);
+        LocalDate endDate = LocalDate.of(2023, 5, 20);
+        Period dateDifference = Period.between(startDate, endDate);
+        System.out.println("Difference in Period: " + dateDifference);
+        System.out.println("Years: " + dateDifference.getYears());
+        System.out.println("Months: " + dateDifference.getMonths());
+        System.out.println("Days: " + dateDifference.getDays());
 
-        System.out.println("Years: " + periodBetween.getYears());
-        System.out.println("Months: " + periodBetween.getMonths());
-        System.out.println("Days: " + periodBetween.getDays());
+        // 3. Normalize a Period
+        Period normalizedPeriod = Period.ofMonths(15);
+        System.out.println("Period 15 months: " + normalizedPeriod);
+        System.out.println("Normalized: " + normalizedPeriod.normalized()); // P1Y3M
 
-        // 3. Adding/Subtracting Periods to/from dates
-        LocalDate today = LocalDate.now();
-        LocalDate futureDate = today.plus(mixedPeriod);
-        System.out.println("Today: " + today);
-        System.out.println("Today plus mixed period: " + futureDate);
-
-        // 4. Normalizing a Period (e.g., converting 18 months to 1 year and 6 months)
-        Period periodToNormalize = Period.ofMonths(18);
-        System.out.println("Period to Normalize: " + periodToNormalize);
-        System.out.println("Normalized: " + periodToNormalize.normalized()); // P1Y6M
+        // 4. Add period to a date
+        LocalDate updatedDate = startDate.plus(period);
+        System.out.println("Start date + Period: " + updatedDate);
     }
 }
 ```
 
-### 2.8 `DateTimeFormatter` - Formatting and Parsing
+**Output:**
 
-**Purpose:** Thread-safe class for formatting `java.time` objects into strings and parsing strings back into `java.time` objects. It replaces `SimpleDateFormat` and is the recommended way to handle date-time string conversions.
+```
+--- Period Example ---
+Period: P1Y6M10D
+Difference in Period: P3Y4M5D
+Years: 3
+Months: 4
+Days: 5
+Period 15 months: P15M
+Normalized: P1Y3M
+Start date + Period: 2021-07-25
+```
 
-**Examples:**
+#### 3.2.3 `ChronoUnit`
+
+*   An enum representing standard units of time (e.g., `DAYS`, `HOURS`, `MONTHS`, `YEARS`, `MILLENNIA`).
+*   Useful for adding/subtracting specific units and calculating differences between temporal objects.
+
+```java
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+
+public class ChronoUnitExample {
+    public static void main(String[] args) {
+        System.out.println("--- ChronoUnit Example ---");
+
+        LocalDate date1 = LocalDate.of(2023, 1, 1);
+        LocalDate date2 = LocalDate.of(2024, 5, 15);
+
+        // 1. Calculate difference in units
+        long daysBetween = ChronoUnit.DAYS.between(date1, date2);
+        System.out.println("Days between " + date1 + " and " + date2 + ": " + daysBetween);
+
+        long monthsBetween = ChronoUnit.MONTHS.between(date1, date2);
+        System.out.println("Months between: " + monthsBetween);
+
+        long yearsBetween = ChronoUnit.YEARS.between(date1, date2);
+        System.out.println("Years between: " + yearsBetween);
+
+        // 2. Add/Subtract units using plus()/minus() with ChronoUnit
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime fiveHoursLater = now.plus(5, ChronoUnit.HOURS);
+        System.out.println("Five hours later: " + fiveHoursLater);
+
+        LocalTime time = LocalTime.of(10, 30);
+        LocalTime nextMinute = time.plus(1, ChronoUnit.MINUTES);
+        System.out.println("Next minute: " + nextMinute);
+    }
+}
+```
+
+**Output:**
+
+```
+--- ChronoUnit Example ---
+Days between 2023-01-01 and 2024-05-15: 500
+Months between: 16
+Years between: 1
+Five hours later: 2024-05-15T15:30:45.123456789
+Next minute: 10:31
+```
+
+### 3.3 Formatting and Parsing
+
+The `java.time.format.DateTimeFormatter` class is used for converting between date/time objects and their string representations.
+
+*   It's immutable and thread-safe.
+*   Provides predefined formatters (`ISO_LOCAL_DATE`, `ISO_DATE_TIME`, etc.).
+*   Allows custom pattern-based formatting.
+
+#### Example: `DateTimeFormatter`
 
 ```java
 import java.time.LocalDate;
@@ -564,121 +714,109 @@ import java.util.Locale;
 
 public class DateTimeFormatterExample {
     public static void main(String[] args) {
+        System.out.println("--- DateTimeFormatter Example ---");
+
         LocalDateTime now = LocalDateTime.now();
-        ZonedDateTime zdtNow = ZonedDateTime.now();
         LocalDate today = LocalDate.now();
+        LocalTime currentTime = LocalTime.now();
+        ZonedDateTime zdt = ZonedDateTime.now();
 
-        // 1. Using predefined formatters
-        String isoDate = today.format(DateTimeFormatter.ISO_LOCAL_DATE);
-        System.out.println("ISO Local Date: " + isoDate); // 2023-10-26
+        // --- 1. Predefined Formatters ---
+        System.out.println("\n--- Predefined Formatters ---");
+        System.out.println("ISO Local Date: " + today.format(DateTimeFormatter.ISO_LOCAL_DATE)); // 2024-05-15
+        System.out.println("ISO Local Time: " + currentTime.format(DateTimeFormatter.ISO_LOCAL_TIME)); // 10:30:45.123456789
+        System.out.println("ISO Local Date Time: " + now.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)); // 2024-05-15T10:30:45.123456789
+        System.out.println("ISO Zoned Date Time: " + zdt.format(DateTimeFormatter.ISO_ZONED_DATE_TIME)); // 2024-05-15T10:30:45.123456789-04:00[America/New_York]
 
-        String isoDateTime = now.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-        System.out.println("ISO Local DateTime: " + isoDateTime); // 2023-10-26T14:30:45.123
+        // --- 2. FormatStyle (Locale-sensitive) ---
+        System.out.println("\n--- FormatStyle (Locale-sensitive) ---");
+        DateTimeFormatter shortDate = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
+        System.out.println("Short Date (Default Locale): " + today.format(shortDate)); // 5/15/24 (for US)
 
-        String isoZoned = zdtNow.format(DateTimeFormatter.ISO_ZONED_DATE_TIME);
-        System.out.println("ISO Zoned DateTime: " + isoZoned); // 2023-10-26T14:30:45.123-04:00[America/New_York]
+        DateTimeFormatter mediumDateTime = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
+                                                    .withLocale(Locale.UK); // Specify locale
+        System.out.println("Medium DateTime (UK Locale): " + now.format(mediumDateTime)); // 15 May 2024, 10:30:45
 
-        // 2. Using pattern strings (similar to SimpleDateFormat, but thread-safe)
-        DateTimeFormatter customFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-        String formattedCustom = now.format(customFormatter);
-        System.out.println("Custom formatted: " + formattedCustom); // 26/10/2023 14:30:45
+        // --- 3. Custom Patterns ---
+        System.out.println("\n--- Custom Patterns ---");
+        // yyyy: year (e.g., 2024)
+        // MM: month (01-12)
+        // dd: day of month (01-31)
+        // HH: hour (00-23)
+        // mm: minute (00-59)
+        // ss: second (00-59)
+        // SSS: milliseconds
+        // EEE: day of week short (Mon)
+        // EEEE: day of week full (Monday)
+        // a: AM/PM
+        // zzz: time zone abbreviation (EST)
+        // Z: time zone offset (+0000)
+        // X: ISO 8601 offset (+04, +0400, +04:00)
+        // For full list: https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html
 
-        DateTimeFormatter dateOnlyFormatter = DateTimeFormatter.ofPattern("EEEE, MMMM dd, yyyy");
-        String formattedDateOnly = today.format(dateOnlyFormatter);
-        System.out.println("Date only formatted: " + formattedDateOnly); // Thursday, October 26, 2023
+        DateTimeFormatter customFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss EEEE");
+        System.out.println("Custom Formatted: " + now.format(customFormatter)); // 2024/05/15 10:30:45 Wednesday
 
-        // 3. Using localized styles
-        String localizedDate = today.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL));
-        System.out.println("Localized Date (FULL): " + localizedDate); // Thursday, October 26, 2023
+        DateTimeFormatter timeWithAmPm = DateTimeFormatter.ofPattern("hh:mm:ss a");
+        System.out.println("Time with AM/PM: " + currentTime.format(timeWithAmPm)); // 10:30:45 AM
 
-        String localizedDateTime = now.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM));
-        System.out.println("Localized DateTime (MEDIUM): " + localizedDateTime); // Oct 26, 2023, 2:30:45 PM
+        DateTimeFormatter zdtCustomFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss zzzz");
+        System.out.println("ZonedDateTime Custom: " + zdt.format(zdtCustomFormatter)); // 2024-05-15 10:30:45 Eastern Daylight Time
 
-        // Localized for a different locale
-        DateTimeFormatter frLocaleFormatter = DateTimeFormatter
-                                                .ofLocalizedDateTime(FormatStyle.MEDIUM)
-                                                .withLocale(Locale.FRENCH);
-        String frenchDateTime = now.format(frLocaleFormatter);
-        System.out.println("French DateTime (MEDIUM): " + frenchDateTime); // 26 oct. 2023 14:30:45
+        // --- 4. Parsing Strings into Date-Time Objects ---
+        System.out.println("\n--- Parsing Strings ---");
+        String dateToParse = "2023-01-25";
+        LocalDate parsedLocalDate = LocalDate.parse(dateToParse);
+        System.out.println("Parsed LocalDate: " + parsedLocalDate);
 
-        // 4. Parsing Strings
-        String dateString = "15-08-2024 10:00:00";
-        DateTimeFormatter parser = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-        LocalDateTime parsedDateTime = LocalDateTime.parse(dateString, parser);
-        System.out.println("Parsed LocalDateTime: " + parsedDateTime);
+        String dateTimeToParse = "2022-12-31 23:59:59";
+        // Need to use a formatter that matches the string format
+        DateTimeFormatter parser = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime parsedLocalDateTime = LocalDateTime.parse(dateTimeToParse, parser);
+        System.out.println("Parsed LocalDateTime: " + parsedLocalDateTime);
 
-        String timeString = "07:30 PM";
-        DateTimeFormatter timeParser = DateTimeFormatter.ofPattern("hh:mm a");
-        LocalTime parsedTime = LocalTime.parse(timeString, timeParser);
-        System.out.println("Parsed LocalTime: " + parsedTime);
+        String zonedDateTimeToParse = "2021-07-04 14:00:00 America/Los_Angeles";
+        DateTimeFormatter zdtParser = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss VV"); // VV for Zone ID
+        ZonedDateTime parsedZonedDateTime = ZonedDateTime.parse(zonedDateTimeToParse, zdtParser);
+        System.out.println("Parsed ZonedDateTime: " + parsedZonedDateTime);
     }
 }
 ```
 
-### 2.9 `TemporalAdjusters` - Complex Date Adjustments
+**Output:**
 
-**Purpose:** A utility class that provides a rich set of predefined `TemporalAdjuster` implementations. These are useful for calculating "the next working day", "the last day of the month", "the first day of the year", etc.
+```
+--- DateTimeFormatter Example ---
 
-**Examples:**
+--- Predefined Formatters ---
+ISO Local Date: 2024-05-15
+ISO Local Time: 10:30:45.123456789
+ISO Local Date Time: 2024-05-15T10:30:45.123456789
+ISO Zoned Date Time: 2024-05-15T10:30:45.123456789-04:00[America/New_York]
 
-```java
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.temporal.TemporalAdjusters;
+--- FormatStyle (Locale-sensitive) ---
+Short Date (Default Locale): 5/15/24
+Medium DateTime (UK Locale): 15 May 2024, 10:30:45
 
-public class TemporalAdjustersExample {
-    public static void main(String[] args) {
-        LocalDate today = LocalDate.of(2023, 10, 26); // Thursday
+--- Custom Patterns ---
+Custom Formatted: 2024/05/15 10:30:45 Wednesday
+Time with AM/PM: 10:30:45 AM
+ZonedDateTime Custom: 2024-05-15 10:30:45 Eastern Daylight Time
 
-        // 1. Last day of the month
-        LocalDate lastDayOfMonth = today.with(TemporalAdjusters.lastDayOfMonth());
-        System.out.println("Last day of " + today.getMonth() + ": " + lastDayOfMonth);
-
-        // 2. First day of the next month
-        LocalDate firstDayOfNextMonth = today.with(TemporalAdjusters.firstDayOfNextMonth());
-        System.out.println("First day of next month: " + firstDayOfNextMonth);
-
-        // 3. Next Monday
-        LocalDate nextMonday = today.with(TemporalAdjusters.next(DayOfWeek.MONDAY));
-        System.out.println("Next Monday from " + today + ": " + nextMonday);
-
-        // 4. Previous Sunday
-        LocalDate previousSunday = today.with(TemporalAdjusters.previous(DayOfWeek.SUNDAY));
-        System.out.println("Previous Sunday from " + today + ": " + previousSunday);
-
-        // 5. First working day of the month (Monday-Friday)
-        LocalDate firstWorkingDay = LocalDate.of(2023, 11, 1) // November 1, 2023 is a Wednesday
-                                    .with(TemporalAdjusters.firstInMonth(DayOfWeek.MONDAY));
-        System.out.println("First Monday of November 2023: " + firstWorkingDay);
-
-        // 6. Custom Adjuster (e.g., next pay day - 15th or last day of month)
-        LocalDate myNextPayDay = today.with(temporal -> {
-            LocalDate date = (LocalDate) temporal;
-            if (date.getDayOfMonth() < 15) {
-                return date.withDayOfMonth(15);
-            } else {
-                return date.with(TemporalAdjusters.lastDayOfMonth());
-            }
-        });
-        System.out.println("Next pay day from " + today + ": " + myNextPayDay);
-    }
-}
+--- Parsing Strings ---
+Parsed LocalDate: 2023-01-25
+Parsed LocalDateTime: 2022-12-31T23:59:59
+Parsed ZonedDateTime: 2021-07-04T14:00-07:00[America/Los_Angeles]
 ```
 
----
+### 3.4 Converting Between Old and New API
 
-## 3. Converting Between Legacy and Modern APIs
+Sometimes you'll need to interoperate with legacy code or APIs that still use `java.util.Date` or `java.util.Calendar`.
 
-Sometimes, you need to convert between the old `java.util.Date`/`Calendar` classes and the new `java.time` classes, especially when integrating with older codebases or libraries.
-
-*   `java.util.Date` <-> `java.time.Instant`
-*   `java.util.Calendar` <-> `java.time.ZonedDateTime`
-
-**Examples:**
+#### Example: Conversions
 
 ```java
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -687,65 +825,76 @@ import java.util.Date;
 
 public class ConversionExample {
     public static void main(String[] args) {
-        // --- Legacy to Modern ---
+        System.out.println("--- Conversion Example ---");
 
-        // 1. Date to Instant
-        Date oldDate = new Date(); // Current date/time
+        // --- Old to New API ---
+
+        // 1. java.util.Date to java.time.Instant
+        Date oldDate = new Date(); // Current date and time
         Instant instantFromDate = oldDate.toInstant();
-        System.out.println("Old Date: " + oldDate);
-        System.out.println("Instant from Date: " + instantFromDate);
+        System.out.println("Date to Instant: " + oldDate + " -> " + instantFromDate);
 
-        // 2. Date to LocalDateTime (requires a ZoneId)
-        // LocalDateTime does not have timezone info, so you need to specify one
-        LocalDateTime localDateTimeFromDate = oldDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-        System.out.println("LocalDateTime from Date: " + localDateTimeFromDate);
+        // 2. java.util.Date to java.time.LocalDateTime (requires a ZoneId)
+        // If you don't specify a zone, Instant.atZone(ZoneId.systemDefault()) is commonly used
+        ZoneId defaultZone = ZoneId.systemDefault();
+        LocalDateTime localDateTimeFromDate = instantFromDate.atZone(defaultZone).toLocalDateTime();
+        System.out.println("Date to LocalDateTime (via Instant): " + oldDate + " -> " + localDateTimeFromDate);
 
-        // 3. Date to ZonedDateTime
-        ZonedDateTime zonedDateTimeFromDate = oldDate.toInstant().atZone(ZoneId.systemDefault());
-        System.out.println("ZonedDateTime from Date: " + zonedDateTimeFromDate);
+        // 3. java.util.Calendar to java.time.ZonedDateTime
+        Calendar oldCalendar = Calendar.getInstance(); // Current date and time in default zone
+        ZonedDateTime zonedDateTimeFromCalendar = oldCalendar.toInstant().atZone(oldCalendar.getTimeZone().toZoneId());
+        System.out.println("Calendar to ZonedDateTime: " + oldCalendar.getTime() + " -> " + zonedDateTimeFromCalendar);
 
-        // 4. Calendar to ZonedDateTime
-        Calendar oldCalendar = Calendar.getInstance(); // Current date/time
-        ZonedDateTime zonedDateTimeFromCalendar = oldCalendar.toInstant().atZone(ZoneId.systemDefault());
-        System.out.println("Old Calendar: " + oldCalendar.getTime());
-        System.out.println("ZonedDateTime from Calendar: " + zonedDateTimeFromCalendar);
 
-        // --- Modern to Legacy ---
+        // --- New to Old API ---
 
-        // 1. Instant to Date
-        Instant modernInstant = Instant.now();
-        Date dateFromInstant = Date.from(modernInstant);
-        System.out.println("Modern Instant: " + modernInstant);
-        System.out.println("Date from Instant: " + dateFromInstant);
+        // 1. java.time.Instant to java.util.Date
+        Instant newInstant = Instant.now();
+        Date dateFromInstant = Date.from(newInstant);
+        System.out.println("Instant to Date: " + newInstant + " -> " + dateFromInstant);
 
-        // 2. LocalDateTime to Date (requires a ZoneId to convert to Instant first)
-        LocalDateTime modernLocalDateTime = LocalDateTime.now();
-        Date dateFromLocalDateTime = Date.from(modernLocalDateTime.atZone(ZoneId.systemDefault()).toInstant());
-        System.out.println("Modern LocalDateTime: " + modernLocalDateTime);
-        System.out.println("Date from LocalDateTime: " + dateFromLocalDateTime);
+        // 2. java.time.ZonedDateTime to java.util.Date
+        ZonedDateTime newZonedDateTime = ZonedDateTime.now();
+        Date dateFromZonedDateTime = Date.from(newZonedDateTime.toInstant());
+        System.out.println("ZonedDateTime to Date: " + newZonedDateTime + " -> " + dateFromZonedDateTime);
 
-        // 3. ZonedDateTime to Date
-        ZonedDateTime modernZonedDateTime = ZonedDateTime.now(ZoneId.of("Europe/London"));
-        Date dateFromZonedDateTime = Date.from(modernZonedDateTime.toInstant());
-        System.out.println("Modern ZonedDateTime: " + modernZonedDateTime);
-        System.out.println("Date from ZonedDateTime: " + dateFromZonedDateTime);
+        // 3. java.time.LocalDateTime to java.util.Date (requires a ZoneId)
+        LocalDateTime newLocalDateTime = LocalDateTime.now();
+        Date dateFromLocalDateTime = Date.from(newLocalDateTime.atZone(defaultZone).toInstant());
+        System.out.println("LocalDateTime to Date (via default Zone): " + newLocalDateTime + " -> " + dateFromLocalDateTime);
 
-        // 4. ZonedDateTime to Calendar
-        Calendar calendarFromZonedDateTime = Calendar.getInstance();
-        calendarFromZonedDateTime.setTime(Date.from(modernZonedDateTime.toInstant()));
-        System.out.println("Calendar from ZonedDateTime: " + calendarFromZonedDateTime.getTime());
-
-        // 5. LocalDate to Date (not direct, needs to be combined with a time and zone)
-        LocalDate modernLocalDate = LocalDate.now();
-        Date dateFromLocalDate = Date.from(modernLocalDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        System.out.println("Modern LocalDate: " + modernLocalDate);
-        System.out.println("Date from LocalDate (start of day): " + dateFromLocalDate);
+        // 4. java.time.ZonedDateTime to java.util.Calendar
+        ZonedDateTime newZdtForCalendar = ZonedDateTime.now(ZoneId.of("America/Los_Angeles"));
+        Calendar calendarFromZdt = Calendar.getInstance(java.util.TimeZone.getTimeZone(newZdtForCalendar.getZone()));
+        calendarFromZdt.setTimeInMillis(newZdtForCalendar.toInstant().toEpochMilli());
+        System.out.println("ZonedDateTime to Calendar: " + newZdtForCalendar + " -> " + calendarFromZdt.getTime());
     }
 }
 ```
 
----
+**Output:**
 
-## Conclusion
+```
+--- Conversion Example ---
+Date to Instant: Wed May 15 10:30:45 EDT 2024 -> 2024-05-15T14:30:45.123456789Z
+Date to LocalDateTime (via Instant): Wed May 15 10:30:45 EDT 2024 -> 2024-05-15T10:30:45.123456789
+Calendar to ZonedDateTime: Wed May 15 10:30:45 EDT 2024 -> 2024-05-15T10:30:45.123456789-04:00[America/New_York]
+Instant to Date: 2024-05-15T14:30:45.123456789Z -> Wed May 15 10:30:45 EDT 2024
+ZonedDateTime to Date: 2024-05-15T10:30:45.123456789-04:00[America/New_York] -> Wed May 15 10:30:45 EDT 2024
+LocalDateTime to Date (via default Zone): 2024-05-15T10:30:45.123456789 -> Wed May 15 10:30:45 EDT 2024
+ZonedDateTime to Calendar: 2024-05-15T07:30:45.123456789-07:00[America/Los_Angeles] -> Wed May 15 07:30:45 PDT 2024
+```
 
-For any new development in Java, it is **highly recommended** to use the **Modern Date/Time API (`java.time` package)** introduced in Java 8. It solves the long-standing problems of the legacy API by providing a clear, immutable, thread-safe, and comprehensive set of classes for handling all date and time requirements. Only use the legacy API when you absolutely must interact with older code or libraries that have not yet been migrated.
+## 4. Best Practices
+
+*   **Always use `java.time` for new code.** Avoid `java.util.Date` and `java.util.Calendar` unless you are dealing with legacy APIs.
+*   **Be explicit about time zones.** If your application deals with users in different locations, `ZonedDateTime` is your friend.
+*   **Store `Instant` or UTC `LocalDateTime` in databases.** When saving timestamps, it's generally best to store them in UTC to avoid time zone conversion issues. Use `Instant` for precise point-in-time stamps. If a database only supports `DATETIME` without time zone, store `LocalDateTime` that has been converted from a `ZonedDateTime` to UTC.
+*   **Use `LocalDate` and `LocalTime` when no time zone is relevant.** For birthdays, anniversaries, or daily recurring events (like store opening hours that are the "same local time" everywhere), these are perfect.
+*   **Use `LocalDateTime` when a specific date and time are needed, but the time zone context is handled implicitly or externally.** E.g., a "meeting start time" for an event that will always be interpreted in the user's local time, or when all times are already assumed to be in UTC.
+*   **Use `DateTimeFormatter` for all parsing and formatting.** Never rely on `toString()` for display or `Date` constructors for parsing. Always specify a `Locale` if the format is locale-sensitive (e.g., month names, date order).
+*   **Understand `Duration` vs. `Period`.** `Duration` for time-based amounts (hours, minutes), `Period` for date-based amounts (years, months, days).
+
+## 5. Conclusion
+
+The `java.time` package has significantly improved date and time handling in Java, making it more intuitive, robust, and less prone to errors. By embracing its immutable classes and clear separation of concerns (date, time, instant, time-zone-aware), developers can write more reliable and maintainable code when dealing with temporal data.

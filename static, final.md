@@ -1,434 +1,576 @@
-Java's `static` and `final` keywords are fundamental to understanding class and object behavior, as well as creating constants. Let's break them down in detail.
+The `static` and `final` keywords in Java are fundamental concepts that control the behavior and scope of members (variables and methods) and even classes. When combined as `static final`, they create powerful, unchangeable constants.
+
+Let's break them down in detail with examples.
 
 ---
 
-# Understanding `static` and `final` Keywords in Java
+# `static` Keyword in Java
 
-In Java, `static` and `final` are non-access modifiers that apply to variables, methods, and classes, altering their behavior and scope. They are crucial for designing robust, efficient, and maintainable applications.
+The `static` keyword is primarily used for **memory management**. It applies to members (variables and methods) of a class, making them belong to the class itself rather than to any specific instance (object) of that class.
 
----
+## 1. `static` Variables (Class Variables)
 
-## 1. The `static` Keyword
+*   **Belong to the class:** There is only one copy of a `static` variable per class, regardless of how many objects are created.
+*   **Memory allocation:** `static` variables are stored in a common memory location and are initialized only once when the class is loaded into memory.
+*   **Access:** You can access `static` variables directly using the class name (e.g., `ClassName.variableName`) without creating an object. While you *can* access them via an object reference, it's discouraged as it gives a misleading impression of instance ownership.
 
-The `static` keyword in Java is primarily used for **memory management**. It indicates that a member (variable, method, or nested class) belongs to the **class itself**, rather than to any specific instance (object) of that class.
+### Example: `static` Variable
 
-### 1.1 `static` Variables (Class Variables)
-
-*   **Belongs to the class:** There is only *one copy* of a `static` variable per class, regardless of how many objects are created. All instances of the class share the same `static` variable.
-*   **Memory:** `static` variables are stored in the method area (part of the heap memory, specifically the permanent generation or metaspace in modern JVMs) and are initialized when the class is loaded.
-*   **Access:** They can be accessed directly using the class name, without creating an object.
-    `ClassName.variableName`
-
-#### Example: `static` Variable
+**Filename:** `Car.java`
 
 ```java
-class Company {
-    // This 'companyName' is shared by all employees of this company
-    public static String companyName = "Tech Solutions Inc.";
-    public String employeeName;
-    public int employeeId;
+public class Car {
+    // This is a static variable (class variable)
+    // It keeps track of the total number of Car objects created across all instances.
+    public static int numberOfCars = 0;
 
-    public Company(String employeeName, int employeeId) {
-        this.employeeName = employeeName;
-        this.employeeId = employeeId;
+    // Instance variable
+    String model;
+
+    public Car(String model) {
+        this.model = model;
+        // Increment the static counter every time a new Car object is created
+        numberOfCars++;
+        System.out.println("Created a new car: " + model);
     }
 
-    public void displayEmployeeInfo() {
-        System.out.println("Employee ID: " + employeeId);
-        System.out.println("Employee Name: " + employeeName);
-        System.out.println("Company: " + companyName); // Accessing static variable
-        System.out.println("---");
+    public void displayCarInfo() {
+        System.out.println("Model: " + model + ", Total Cars: " + numberOfCars);
     }
-}
 
-public class StaticVariableExample {
+    // Main method to demonstrate static variable usage
     public static void main(String[] args) {
-        Company emp1 = new Company("Alice", 101);
-        Company emp2 = new Company("Bob", 102);
+        System.out.println("Initial number of cars: " + Car.numberOfCars); // Accessing via class name
 
-        emp1.displayEmployeeInfo();
-        emp2.displayEmployeeInfo();
+        Car ford = new Car("Ford Fiesta");
+        Car toyota = new Car("Toyota Camry");
+        Car honda = new Car("Honda Civic");
 
-        // Changing the static variable affects all instances
-        Company.companyName = "Global Innovations Ltd.";
+        // All objects share the same static variable 'numberOfCars'
+        System.out.println("\nNumber of cars created so far (via object ford): " + ford.numberOfCars);
+        System.out.println("Number of cars created so far (via object toyota): " + toyota.numberOfCars);
+        System.out.println("Number of cars created so far (via class Car): " + Car.numberOfCars); // Recommended way
 
-        System.out.println("After changing companyName:");
-        emp1.displayEmployeeInfo(); // emp1 now shows new company name
-        emp2.displayEmployeeInfo(); // emp2 also shows new company name
+        Car nissan = new Car("Nissan Altima");
+        System.out.println("Final number of cars: " + Car.numberOfCars);
     }
 }
 ```
 
-### 1.2 `static` Methods (Class Methods)
+**How to Compile and Run:**
 
-*   **Belongs to the class:** Can be called directly using the class name, without creating an object.
-    `ClassName.methodName()`
-*   **No `this` or `super`:** A `static` method cannot use the `this` or `super` keywords, as they refer to instance-specific contexts.
-*   **Access restriction:** `static` methods can only directly access other `static` members (variables or methods) of the same class. They cannot directly access non-static (instance) variables or call non-static methods because they operate without an object context.
-*   **Common Use:** Utility methods (e.g., `Math.max()`, `Integer.parseInt()`), factory methods.
+```bash
+javac Car.java
+java Car
+```
 
-#### Example: `static` Method
+**Expected Output:**
+
+```
+Initial number of cars: 0
+Created a new car: Ford Fiesta
+Created a new car: Toyota Camry
+Created a new car: Honda Civic
+
+Number of cars created so far (via object ford): 3
+Number of cars created so far (via object toyota): 3
+Number of cars created so far (via class Car): 3
+Created a new car: Nissan Altima
+Final number of cars: 4
+```
+
+**Explanation:**
+Notice how `numberOfCars` is shared across all `Car` objects. When one object increments it, the change is visible to all other objects and directly through the `Car` class itself.
+
+## 2. `static` Methods (Class Methods)
+
+*   **Belong to the class:** Like `static` variables, `static` methods belong to the class, not to any specific instance.
+*   **Access:** Can be called directly using the class name (e.g., `ClassName.methodName()`) without creating an object.
+*   **Limitations:**
+    *   A `static` method can only directly call other `static` methods and access `static` variables.
+    *   It cannot access non-static (instance) variables or call non-static (instance) methods directly because non-static members require an object instance to exist.
+    *   It cannot use the `this` or `super` keywords, as these refer to the current object instance.
+
+### Example: `static` Method
+
+**Filename:** `MathUtility.java`
 
 ```java
-class Calculator {
-    // A static variable to count operations (shared by all calculations)
-    private static int operationCount = 0;
+public class MathUtility {
 
-    // A static method to add two numbers
+    // This is a static method (class method)
+    // It performs an operation that doesn't depend on any specific object's state.
     public static int add(int a, int b) {
-        operationCount++; // Accessing static variable
         return a + b;
     }
 
-    // A static method to subtract two numbers
-    public static int subtract(int a, int b) {
-        operationCount++;
-        return a - b;
+    // Another static method
+    public static double multiply(double a, double b) {
+        return a * b;
     }
 
-    // A static method to get the total operation count
-    public static int getOperationCount() {
-        return operationCount;
-    }
-}
+    // A static variable that might be used by static methods
+    public static final double PI = 3.14159;
 
-public class StaticMethodExample {
+    // Instance method (requires an object)
+    public double calculateCircumference(double radius) {
+        // Can access static variable PI
+        return 2 * PI * radius;
+    }
+
     public static void main(String[] args) {
         // Calling static methods directly using the class name
-        int sum = Calculator.add(10, 5);
-        System.out.println("Sum: " + sum);
+        int sum = MathUtility.add(10, 5);
+        System.out.println("10 + 5 = " + sum);
 
-        int difference = Calculator.subtract(20, 7);
-        System.out.println("Difference: " + difference);
+        double product = MathUtility.multiply(2.5, 4.0);
+        System.out.println("2.5 * 4.0 = " + product);
 
-        System.out.println("Total operations: " + Calculator.getOperationCount());
+        // Accessing static variable directly
+        System.out.println("Value of PI: " + MathUtility.PI);
 
-        // You cannot call non-static methods or access non-static variables here
-        // without an instance of Calculator.
-        // For example, if 'Calculator' had a non-static method 'multiply()',
-        // you'd need: new Calculator().multiply(a, b);
+        // To call an instance method, you need an object
+        MathUtility mu = new MathUtility();
+        double circumference = mu.calculateCircumference(5.0);
+        System.out.println("Circumference of a circle with radius 5.0: " + circumference);
+
+        // Example of what you CANNOT do:
+        // MathUtility.calculateCircumference(10.0); // ERROR: Non-static method cannot be referenced from a static context
     }
 }
 ```
 
-### 1.3 `static` Blocks (Static Initializer Blocks)
+**How to Compile and Run:**
 
-*   **Execution:** A `static` block is executed *once* when the class is loaded into memory, even before the `main` method or any objects are created.
-*   **Purpose:** Used to initialize `static` variables that require complex logic or resource setup that cannot be done in a single line.
+```bash
+javac MathUtility.java
+java MathUtility
+```
 
-#### Example: `static` Block
+**Expected Output:**
+
+```
+10 + 5 = 15
+2.5 * 4.0 = 10.0
+Value of PI: 3.14159
+Circumference of a circle with radius 5.0: 31.4159
+```
+
+**Explanation:**
+`static` methods are perfect for utility functions or operations that don't need access to object-specific data. `Math.max()`, `Integer.parseInt()` are classic examples of `static` methods in Java's standard library.
+
+## 3. `static` Blocks (Static Initializer Blocks)
+
+*   **Purpose:** Used to initialize `static` variables that require more complex logic than a simple one-liner assignment.
+*   **Execution:** A `static` block is executed only once, when the class is loaded into memory by the Java Virtual Machine (JVM), and before any `static` methods are called or any objects are created.
+*   **Order:** If multiple `static` blocks exist in a class, they are executed in the order they appear.
+
+### Example: `static` Block
+
+**Filename:** `SystemConfig.java`
 
 ```java
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
 
-class DataStore {
-    public static final List<String> INITIAL_DATA_LIST;
+public class SystemConfig {
+    public static String OS_NAME;
+    public static int PROCESSOR_COUNT;
+    public static LocalDateTime BOOT_TIME;
 
-    // Static block to initialize the static final list
+    // Static block to initialize static variables
     static {
-        System.out.println("Static block executed: Initializing INITIAL_DATA_LIST...");
-        INITIAL_DATA_LIST = new ArrayList<>();
-        INITIAL_DATA_LIST.add("Item A");
-        INITIAL_DATA_LIST.add("Item B");
-        INITIAL_DATA_LIST.add("Item C");
-        // You can perform more complex initialization logic here
+        System.out.println("--- Static block executed ---");
+        OS_NAME = System.getProperty("os.name");
+        PROCESSOR_COUNT = Runtime.getRuntime().availableProcessors();
+        BOOT_TIME = LocalDateTime.now();
+        System.out.println("--- Static block finished ---");
     }
 
-    public DataStore() {
-        System.out.println("DataStore object created.");
+    public static void displayConfig() {
+        System.out.println("\nSystem Configuration:");
+        System.out.println("OS Name: " + OS_NAME);
+        System.out.println("Processor Count: " + PROCESSOR_COUNT);
+        System.out.println("System Boot Time (approx): " + BOOT_TIME);
     }
-}
 
-public class StaticBlockExample {
     public static void main(String[] args) {
         System.out.println("Main method started.");
-
-        // The static block is executed before this line, when DataStore class is loaded
-        System.out.println("Initial data: " + DataStore.INITIAL_DATA_LIST);
-
-        // Creating an object. Static block won't run again.
-        DataStore ds1 = new DataStore();
-        DataStore ds2 = new DataStore();
+        // The static block will be executed when SystemConfig class is loaded.
+        // This happens before displayConfig() is called or any objects are created.
+        SystemConfig.displayConfig();
 
         System.out.println("Main method finished.");
     }
 }
 ```
 
-### 1.4 `static` Nested Classes (Static Inner Classes)
+**How to Compile and Run:**
 
-*   **Behavior:** A `static` nested class behaves like a top-level class. It does not require an instance of its outer class to be created.
-*   **Access:** It can only directly access `static` members of its outer class. It cannot access non-static members of the outer class without an explicit outer class object.
-*   **Use Case:** Often used as a helper class that is closely related to the outer class but doesn't depend on an outer class instance.
-
-#### Example: `static` Nested Class
-
-```java
-class OuterClass {
-    private static String staticOuterMessage = "Hello from Outer Class (static)!";
-    private String instanceOuterMessage = "Hello from Outer Class (instance)!";
-
-    public static class StaticNestedClass {
-        public void displayOuterStaticMessage() {
-            // Can access static members of the outer class directly
-            System.out.println(staticOuterMessage);
-        }
-
-        public void displayOuterInstanceMessage() {
-            // Cannot directly access instance members of the outer class
-            // System.out.println(instanceOuterMessage); // ERROR: Non-static field 'instanceOuterMessage' cannot be referenced from a static context
-        }
-    }
-}
-
-public class StaticNestedClassExample {
-    public static void main(String[] args) {
-        // No need to create an instance of OuterClass to create StaticNestedClass
-        OuterClass.StaticNestedClass nestedObject = new OuterClass.StaticNestedClass();
-        nestedObject.displayOuterStaticMessage();
-    }
-}
+```bash
+javac SystemConfig.java
+java SystemConfig
 ```
+
+**Expected Output (will vary based on your system and time of execution):**
+
+```
+--- Static block executed ---
+--- Static block finished ---
+Main method started.
+
+System Configuration:
+OS Name: Mac OS X
+Processor Count: 8
+System Boot Time (approx): 2023-10-27T10:30:45.123456789
+Main method finished.
+```
+
+**Explanation:**
+The output clearly shows that the `static` block runs *before* the `main` method even begins, because the `SystemConfig` class is loaded and initialized when the JVM starts executing `java SystemConfig`.
 
 ---
 
-## 2. The `final` Keyword
+# `final` Keyword in Java
 
-The `final` keyword in Java implies **immutability or non-modifiability**. Its behavior changes slightly depending on whether it's applied to a variable, method, or class.
+The `final` keyword is used to restrict modifications. Its meaning changes slightly depending on whether it's applied to a variable, a method, or a class.
 
-### 2.1 `final` Variables
+## 1. `final` Variables
 
-When applied to a variable, `final` means its value, once assigned, **cannot be changed (reassigned)**.
+*   **Primitive types:** Once a `final` primitive variable is initialized, its value cannot be changed (it becomes a constant).
+*   **Reference types:** Once a `final` reference variable is initialized, it cannot be reassigned to point to a different object. However, the *contents* of the object it refers to *can* be modified, unless the object itself is immutable (like `String` or `Integer`).
+*   **Initialization:**
+    *   **At declaration:** `final int x = 10;`
+    *   **In a constructor:** For instance `final` variables, they must be initialized in *all* constructors.
+    *   **In an initializer block:** For instance `final` variables, this block runs before constructors.
+    *   **In a static block:** For `static final` variables.
 
-*   **Primitives:** For primitive data types (like `int`, `double`, `boolean`), the `final` keyword makes the *value* constant.
-*   **References:** For reference data types (objects), `final` means the *reference* cannot be reassigned to point to a different object. However, the *contents* (state) of the object itself can still be modified, *unless* the object itself is designed to be immutable (e.g., `String`, `Integer`, `LocalDate`).
+### Example: `final` Variables
 
-#### Initialization Rules:
-A `final` variable must be initialized exactly once:
-*   At the time of declaration.
-*   In a constructor (for instance `final` variables).
-*   In a `static` block (for `static final` variables).
-
-#### Example: `final` Variables
+**Filename:** `FinalVariableDemo.java`
 
 ```java
-class Product {
-    // Instance final variable: initialized via constructor
-    public final String PRODUCT_ID;
+class Student {
+    // Instance final variable - must be initialized in constructor or initializer block
+    public final int studentId;
     public String name;
-    public double price;
 
-    // A static final variable: compile-time constant
-    public static final double SALES_TAX_RATE = 0.07; // 7%
-
-    public Product(String productId, String name, double price) {
-        this.PRODUCT_ID = productId; // Initialize final variable
+    public Student(int studentId, String name) {
+        this.studentId = studentId; // Initializing final variable
         this.name = name;
-        this.price = price;
     }
 
-    public void applyDiscount(double discount) {
-        // Can modify non-final instance variables
-        this.price -= discount;
+    public void updateName(String newName) {
+        this.name = newName; // Allowed: 'name' is not final
     }
+
+    // public void updateStudentId(int newId) {
+    //     this.studentId = newId; // ERROR: Cannot assign a value to final variable 'studentId'
+    // }
+
+    public void displayStudent() {
+        System.out.println("Student ID: " + studentId + ", Name: " + name);
+    }
+}
+
+public class FinalVariableDemo {
+
+    // Class-level constant (static final) - discussed in next section
+    public static final double PI_VALUE = 3.14159;
 
     public static void main(String[] args) {
-        final int MAX_ATTEMPTS = 3; // final primitive local variable
+        // 1. Final primitive variable
+        final int MAX_ATTEMPTS = 3;
+        // MAX_ATTEMPTS = 5; // ERROR: Cannot assign a value to final variable 'MAX_ATTEMPTS'
         System.out.println("Max Attempts: " + MAX_ATTEMPTS);
-        // MAX_ATTEMPTS = 4; // ERROR: Cannot assign a value to final variable MAX_ATTEMPTS
 
-        Product p1 = new Product("P001", "Laptop", 1200.00);
-        System.out.println("Product ID: " + p1.PRODUCT_ID);
-        System.out.println("Product Name: " + p1.name);
-        System.out.println("Product Price: " + p1.price);
-        System.out.println("Sales Tax Rate: " + Product.SALES_TAX_RATE);
+        // 2. Final reference variable (object reference cannot change, but object state can)
+        final StringBuilder greeting = new StringBuilder("Hello");
+        greeting.append(", World!"); // Allowed: Modifying the object's content
+        System.out.println("Greeting: " + greeting);
 
-        // p1.PRODUCT_ID = "P002"; // ERROR: Cannot assign a value to final variable PRODUCT_ID
-        p1.name = "Gaming Laptop"; // Allowed: 'name' is not final
-        p1.applyDiscount(50.0); // Allowed: 'price' is not final
+        // greeting = new StringBuilder("Goodbye"); // ERROR: Cannot assign a value to final variable 'greeting'
 
-        System.out.println("Updated Product Name: " + p1.name);
-        System.out.println("Updated Product Price: " + p1.price);
+        // 3. Final instance variable in a class
+        Student s1 = new Student(101, "Alice");
+        s1.displayStudent();
+        s1.updateName("Alicia"); // Allowed: Changing the state of the object referred to by s1
+        s1.displayStudent();
 
-        // Example with final reference variable
-        final StringBuilder sb = new StringBuilder("Hello");
-        sb.append(" World"); // Allowed: Content of the object can be modified
-        System.out.println("StringBuilder: " + sb);
+        Student s2 = new Student(102, "Bob");
+        // s2.studentId = 103; // ERROR: Cannot assign a value to final variable 'studentId'
 
-        // sb = new StringBuilder("Goodbye"); // ERROR: Cannot assign a value to final variable sb
+        System.out.println("PI Value (from static final): " + FinalVariableDemo.PI_VALUE);
     }
 }
 ```
 
-### 2.2 `final` Methods
+**How to Compile and Run:**
 
-When a method is declared `final`, it **cannot be overridden** by any subclass.
+```bash
+javac FinalVariableDemo.java
+java FinalVariableDemo
+```
 
-*   **Purpose:** Ensures that the implementation of a method remains constant across all subclasses. This is useful for security, performance (JVM can sometimes optimize `final` method calls), or to enforce a specific design pattern.
+**Expected Output:**
 
-#### Example: `final` Method
+```
+Max Attempts: 3
+Greeting: Hello, World!
+Student ID: 101, Name: Alice
+Student ID: 101, Name: Alicia
+PI Value (from static final): 3.14159
+```
+
+**Explanation:**
+The example clearly shows that `final` for primitives means the value is fixed, and for references, the reference itself is fixed, but the object it points to can still be mutable (unless the object's class itself is immutable).
+
+## 2. `final` Methods
+
+*   **Restriction:** A `final` method cannot be overridden by subclasses.
+*   **Purpose:**
+    *   **Security:** To prevent subclasses from altering critical behavior.
+    *   **Performance:** The JVM can sometimes optimize calls to `final` methods because it knows they won't be overridden.
+    *   **Design:** To ensure a specific implementation detail remains consistent throughout the inheritance hierarchy.
+
+### Example: `final` Method
+
+**Filename:** `ShapeDemo.java`
 
 ```java
-class Vehicle {
-    public final void startEngine() {
-        System.out.println("Vehicle engine started.");
+class Shape {
+    public final void draw() {
+        System.out.println("Drawing a generic shape.");
     }
 
-    public void accelerate() {
-        System.out.println("Vehicle accelerating.");
+    public void calculateArea() {
+        System.out.println("Calculating area for a generic shape.");
     }
 }
 
-class Car extends Vehicle {
-    // public void startEngine() { // ERROR: startEngine() in Car cannot override startEngine() in Vehicle; overridden method is final
-    //     System.out.println("Car engine started.");
+class Circle extends Shape {
+    // This will cause a compile-time error!
+    // @Override
+    // public void draw() {
+    //     System.out.println("Drawing a circle.");
     // }
 
     @Override
-    public void accelerate() {
-        System.out.println("Car accelerating faster."); // Allowed: accelerate() is not final
+    public void calculateArea() {
+        System.out.println("Calculating area for a circle.");
     }
 }
 
-public class FinalMethodExample {
+class Square extends Shape {
+    // This will also cause a compile-time error if uncommented
+    // @Override
+    // public final void draw() { // Still cannot override
+    //     System.out.println("Drawing a square.");
+    // }
+
+    @Override
+    public void calculateArea() {
+        System.out.println("Calculating area for a square.");
+    }
+}
+
+public class ShapeDemo {
     public static void main(String[] args) {
-        Car myCar = new Car();
-        myCar.startEngine(); // Calls the final method from Vehicle
-        myCar.accelerate();  // Calls the overridden method from Car
+        Shape genericShape = new Shape();
+        Circle circle = new Circle();
+        Square square = new Square();
+
+        System.out.println("--- Generic Shape ---");
+        genericShape.draw();         // Calls Shape's final draw()
+        genericShape.calculateArea();
+
+        System.out.println("\n--- Circle ---");
+        circle.draw();               // Calls Shape's final draw()
+        circle.calculateArea();      // Calls Circle's overridden calculateArea()
+
+        System.out.println("\n--- Square ---");
+        square.draw();               // Calls Shape's final draw()
+        square.calculateArea();      // Calls Square's overridden calculateArea()
     }
 }
 ```
 
-### 2.3 `final` Classes
+**How to Compile and Run:**
 
-When a class is declared `final`, it **cannot be subclassed (inherited from)**.
+```bash
+javac ShapeDemo.java
+java ShapeDemo
+```
 
-*   **Purpose:** Prevents extension. This is often used for security reasons (e.g., to prevent malicious overriding of methods), to ensure immutability (like `String` and wrapper classes `Integer`, `Double`), or when a class's implementation is complete and not intended for modification.
+**Expected Output:**
 
-#### Example: `final` Class
+```
+--- Generic Shape ---
+Drawing a generic shape.
+Calculating area for a generic shape.
+
+--- Circle ---
+Drawing a generic shape.
+Calculating area for a circle.
+
+--- Square ---
+Drawing a generic shape.
+Calculating area for a square.
+```
+
+**Explanation:**
+If you uncomment the `draw()` method in `Circle` or `Square`, the compiler will produce an error like "error: draw() in Circle cannot override draw() in Shape; overridden method is final". This demonstrates that `final` methods cannot be overridden.
+
+## 3. `final` Classes
+
+*   **Restriction:** A `final` class cannot be extended (subclassed).
+*   **Purpose:**
+    *   **Immutability:** Often used for immutable classes (like `String`, `Integer`, `Double`) to ensure their state cannot be changed or extended in a way that breaks their immutability contract.
+    *   **Security:** To prevent malicious subclasses from altering core behavior or creating security vulnerabilities (e.g., `java.lang.System` is final).
+    *   **Design:** When a class is explicitly not designed for inheritance.
+
+### Example: `final` Class
+
+**Filename:** `VaultDemo.java`
 
 ```java
-// Immutable class example (often combined with final fields and no setters)
-final class ImmutablePoint {
-    private final int x;
-    private final int y;
+// This class is final, meaning no other class can extend it.
+final class SecretVault {
+    private String secretCode;
 
-    public ImmutablePoint(int x, int y) {
-        this.x = x;
-        this.y = y;
+    public SecretVault(String code) {
+        this.secretCode = code;
     }
 
-    public int getX() { return x; }
-    public int getY() { return y; }
+    public String getSecretCode() {
+        // In a real scenario, you'd add security checks before revealing.
+        return secretCode;
+    }
 
-    // No setter methods, ensuring immutability
-    // public void setX(int x) { this.x = x; } // Would violate immutability
+    public void lockVault() {
+        System.out.println("Vault is locked.");
+    }
 }
 
-// class ColoredPoint extends ImmutablePoint { // ERROR: Cannot inherit from final class ImmutablePoint
-//     private String color;
-//     public ColoredPoint(int x, int y, String color) {
-//         super(x, y);
-//         this.color = color;
+// This will cause a compile-time error!
+// class CompromisedVault extends SecretVault {
+//     public CompromisedVault(String code) {
+//         super(code);
 //     }
+//     // Cannot override or add methods to a final class
 // }
 
-class UtilityClass {
-    // This class might be final because it only contains static utility methods
-    // and is not intended to be extended or have state.
-    public static final String VERSION = "1.0";
-    public static String greet(String name) {
-        return "Hello, " + name + "!";
-    }
-}
-
-// class ExtendedUtility extends UtilityClass {} // This would also error if UtilityClass was final
-
-public class FinalClassExample {
+public class VaultDemo {
     public static void main(String[] args) {
-        ImmutablePoint p = new ImmutablePoint(10, 20);
-        System.out.println("Point coordinates: (" + p.getX() + ", " + p.getY() + ")");
+        SecretVault vault = new SecretVault("ALPHA-OMEGA-777");
+        System.out.println("Vault Code: " + vault.getSecretCode());
+        vault.lockVault();
 
-        // UtilityClass.VERSION = "1.1"; // ERROR: Cannot assign a value to final variable VERSION
-        System.out.println("Utility Version: " + UtilityClass.VERSION);
-        System.out.println(UtilityClass.greet("Alice"));
+        // If you uncomment the `CompromisedVault` class,
+        // you will get a compile-time error like:
+        // "error: cannot inherit from final SecretVault"
     }
 }
 ```
+
+**How to Compile and Run:**
+
+```bash
+javac VaultDemo.java
+java VaultDemo
+```
+
+**Expected Output:**
+
+```
+Vault Code: ALPHA-OMEGA-777
+Vault is locked.
+```
+
+**Explanation:**
+If you uncomment the `CompromisedVault` class, the Java compiler will prevent compilation because `SecretVault` is `final`. This ensures that the behavior of `SecretVault` cannot be altered by subclassing.
 
 ---
 
-## 3. Combining `static` and `final`: `static final`
+# `static final` Combination in Java
 
-When `static` and `final` are used together, they create a **compile-time constant** (if the value is known at compile time, like primitives or String literals) or a **runtime constant** (for complex objects).
+When `static` and `final` are used together for a variable, it creates a **compile-time constant**.
 
-*   **`static`**: The variable belongs to the class, not an instance. There's only one copy, shared by all.
-*   **`final`**: The value cannot be changed after initialization.
+*   **`static`**: The variable belongs to the class, not to any object. There's only one copy.
+*   **`final`**: The variable's value cannot be changed once initialized.
 
-The combination results in a variable whose value is fixed and belongs to the class, making it a true **constant**.
+This means a `static final` variable is:
+1.  **A constant:** Its value is fixed.
+2.  **A class-level member:** It belongs to the class, not an instance.
+3.  **Initialized once:** When the class is loaded.
 
-*   **Naming Convention:** By convention, `static final` variables are named in `ALL_CAPS` with words separated by underscores (e.g., `MAX_SIZE`, `DEFAULT_VALUE`).
-*   **Initialization:** Must be initialized either at declaration or in a `static` initializer block.
+It is common practice to name `static final` variables in `UPPER_SNAKE_CASE` (e.g., `MAX_RETRIES`, `PI`).
 
 ### Example: `static final`
 
+**Filename:** `AppConstants.java`
+
 ```java
-class ApplicationConfig {
-    // Public static final constant - widely accessible and immutable
-    public static final String APP_NAME = "My Awesome App";
-    public static final double PI = 3.1415926535;
+public class AppConstants {
+
+    // A static final variable - a true constant.
+    // Belongs to the class, initialized once, and its value cannot be changed.
+    public static final String APPLICATION_NAME = "My Awesome App";
     public static final int MAX_USERS = 1000;
+    public static final double VERSION = 1.0;
 
-    // Static final object - the reference is constant, but the object's state can change
-    // unless the object itself is immutable (like String or Integer)
-    public static final StringBuilder LOG_BUFFER = new StringBuilder();
+    // You can also initialize them in a static block if logic is complex
+    public static final long START_TIMESTAMP;
 
-    // Static block to initialize complex static final variables
-    public static final String DATABASE_URL;
     static {
-        // In a real application, this might be loaded from a config file
-        DATABASE_URL = "jdbc:mysql://localhost:3306/app_db";
-        LOG_BUFFER.append("Application started at ");
-        LOG_BUFFER.append(java.time.LocalDateTime.now());
-        LOG_BUFFER.append("\n");
+        START_TIMESTAMP = System.currentTimeMillis();
+        System.out.println("Application constants initialized. Start Timestamp: " + START_TIMESTAMP);
     }
 
-    public void printConfig() {
-        System.out.println("App Name: " + APP_NAME);
-        System.out.println("Value of PI: " + PI);
-        System.out.println("Max Users: " + MAX_USERS);
-        System.out.println("Database URL: " + DATABASE_URL);
-        System.out.println("Initial Log Buffer: " + LOG_BUFFER);
-    }
-}
-
-public class StaticFinalExample {
     public static void main(String[] args) {
-        ApplicationConfig config1 = new ApplicationConfig();
-        config1.printConfig();
+        System.out.println("\n--- Retrieving Application Constants ---");
 
-        System.out.println("\n--- Trying to modify constants ---");
-        // ApplicationConfig.APP_NAME = "New Name"; // ERROR: Cannot assign a value to final variable APP_NAME
-        // ApplicationConfig.MAX_USERS = 2000;       // ERROR: Cannot assign a value to final variable MAX_USERS
+        // Accessing static final variables directly via the class name
+        System.out.println("App Name: " + AppConstants.APPLICATION_NAME);
+        System.out.println("Max Users: " + AppConstants.MAX_USERS);
+        System.out.println("Version: " + AppConstants.VERSION);
+        System.out.println("Application Start Timestamp: " + AppConstants.START_TIMESTAMP);
 
-        // Modifying the content of the StringBuilder (reference is final, but object content is not)
-        ApplicationConfig.LOG_BUFFER.append("User logged in.");
-        System.out.println("Updated Log Buffer (via static reference): " + ApplicationConfig.LOG_BUFFER);
-
-        ApplicationConfig config2 = new ApplicationConfig();
-        // config2 will see the same LOG_BUFFER and its modified content
-        System.out.println("Config2's Log Buffer: " + config2.LOG_BUFFER);
+        // Attempting to change them will result in a compile-time error
+        // AppConstants.MAX_USERS = 2000; // ERROR: Cannot assign a value to final variable 'MAX_USERS'
     }
 }
 ```
+
+**How to Compile and Run:**
+
+```bash
+javac AppConstants.java
+java AppConstants
+```
+
+**Expected Output (Timestamp will vary):**
+
+```
+Application constants initialized. Start Timestamp: 1678889900123
+
+--- Retrieving Application Constants ---
+App Name: My Awesome App
+Max Users: 1000
+Version: 1.0
+Application Start Timestamp: 1678889900123
+```
+
+**Explanation:**
+`static final` variables are perfect for defining global, unchangeable configuration values or mathematical constants within your application. They are loaded once and their values are fixed, making them efficient and reliable.
 
 ---
 
 ## Conclusion
 
-*   **`static`**: Deals with **class-level** members. They belong to the class itself, not individual objects. There's only one copy shared by all instances.
-*   **`final`**: Deals with **immutability**. Prevents reassignment of variables, overriding of methods, or inheritance of classes.
-*   **`static final`**: Creates true **constants**. The value is fixed, and there's only one copy shared across the entire application.
+| Keyword       | Applies to        | Meaning                                                     | Key Behavior                                                              |
+| :------------ | :---------------- | :---------------------------------------------------------- | :------------------------------------------------------------------------ |
+| `static`      | Variables, Methods, Blocks, Nested Classes | Belongs to the *class*, not an *instance*. Shared among all objects. | One copy in memory. Accessed via `ClassName.member`. `static` methods can only access `static` members. |
+| `final`       | Variables, Methods, Classes | Cannot be changed/modified.                                 | **Variable:** Value/reference cannot be reassigned. <br> **Method:** Cannot be overridden by subclasses. <br> **Class:** Cannot be subclassed. |
+| `static final`| Variables         | A class-level constant.                                     | One copy in memory. Value fixed. Initialized once when class loaded. Usually `UPPER_SNAKE_CASE`. |
 
-Understanding these keywords is essential for writing efficient, predictable, and well-structured Java code.
+Understanding these keywords is crucial for writing robust, efficient, and well-designed Java applications. They provide powerful mechanisms for controlling scope, mutability, and inheritance.
