@@ -8,11 +8,13 @@ def xxx(query: str):
     prompt = query + '''
     
     we have some words:
-    outgoing, shy, chatty, lazy, selfish, rude, talkative, 
-    friendly, easy-going, sociable, caring, nice, quiet, bossy
-    toast,cereal
-    half past, quarter
-    skateboard, pilates
+
+    superset , utility, detection, launcher, Archive , disassembler
+    wizard, Pattern , Sealed , Essential , Visual , profiling , dump , analyzer
+    specific, patch  , regularly, independent , allocation , sandboxing, compilation,
+    Architecture, several  , Bootstrap , directory, classpath, Metaspace 
+    among , newer , Young , Eden Space, Survivor , Permanent , metadata, frames, partial 
+
 
     we want to translate these words to vietnamese with table include column:
     english, pronounciation, definition, example, vietnamese
@@ -36,7 +38,7 @@ def xxx(query: str):
     
     return filename
 
-xxx("1-15")  # Call the function with the desired query
+xxx("e2")  # Call the function with the desired query
 
 
 
