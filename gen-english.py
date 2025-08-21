@@ -17,7 +17,7 @@ def xxx(query: str):
 
 
     we want to translate these words to vietnamese with table include column:
-    english, pronounciation, definition, example, vietnamese
+    english, pronounciation, example, vietnamese
 
     format md file
     '''
@@ -38,7 +38,4 @@ def xxx(query: str):
     
     return filename
 
-xxx("e2")  # Call the function with the desired query
-
-
-
+xxx("e2")
