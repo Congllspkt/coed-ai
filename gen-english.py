@@ -17,7 +17,7 @@ def xxx(query: str):
 
 
     we want to translate these words to vietnamese with table include column:
-    english, pronounciation, example, vietnamese
+    english, pronounciation, vietnamese
 
     format md file
     '''
