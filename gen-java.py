@@ -30,7 +30,7 @@ def xxx(query: str):
     
     return filename
 
-xxx("jdk, jvm, jre")
+xxx("object oriented programming")
 
 
 
