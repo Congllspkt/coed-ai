@@ -30,6 +30,8 @@ def xxx(query: str):
     
     return filename
 
+xxx("jdk, jvm, jre")
+
 
 
 
