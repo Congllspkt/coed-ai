@@ -7,7 +7,7 @@ client = genai.Client(api_key="AIzaSyCC8rEWxTRF4u5ukgTM0xgRVigI01b7GhM")
 def xxx(query: str):
     prompt =  query + '''
 
-    IN AWS
+    IN sql oracle
 
     give me detail and have examples (include input, output)
     
@@ -24,38 +24,36 @@ def xxx(query: str):
         f.write(response.text)
 
     print(f"End process {filename}")
-    time.sleep(10)
+    time.sleep(2)
     print("NEXT")
 
     
     return filename
 
 
-xxx("EC2")
-xxx("EBS")
-xxx("EFS")
-xxx("AMI")
-xxx("Elastic Beanstalk")
-xxx("IAM")
-xxx("S3")
-xxx("VPC")
-xxx("Lambda")
-xxx("CloudFormation")
-xxx("ECS")
-xxx("ECR")
-xxx("CloudWatch")
-xxx("CloudTrail")
-xxx("Route53")
-xxx("API Gateway")
-xxx("CloudFront")
-xxx("DynamoDB")
-xxx("RDS")
-xxx("Redshift")
-xxx("SQS")
-xxx("SNS")
-xxx("High Availability & Scalability")
-xxx("Load Balancing")
-xxx("Auto Scaling")
-xxx("Fault Tolerance")
-
-
+xxx("function")
+xxx("procedure")
+xxx("package")
+xxx("trigger")
+xxx("cursor")
+xxx("exception")
+xxx("index")
+xxx("view")
+xxx("materialized view")
+xxx("sequence")
+xxx("partition")
+xxx("dml")
+xxx("ddl")
+xxx("transaction")
+xxx("join")
+xxx("union")
+xxx("union all")
+xxx("left join")
+xxx("right join")
+xxx("full join")
+xxx("cross join")
+xxx("self join")
+xxx("natural join")
+xxx("subquery")
+xxx("cte")
+xxx("concatenate strings")
