@@ -5,9 +5,9 @@ import time
 client = genai.Client(api_key="AIzaSyCC8rEWxTRF4u5ukgTM0xgRVigI01b7GhM")  
 
 def xxx(query: str):
-    prompt = query + '''
+    prompt =  '''
     
-    in java 
+    what's docker, image, container, networking, volume, docker-compose, dockerfile, docker hub, docker-swarm
     
     give me detail and have examples (include input, output)
     
@@ -29,6 +29,9 @@ def xxx(query: str):
 
     
     return filename
+
+
+xxx("docker")
 
 
 
