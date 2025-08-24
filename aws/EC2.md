@@ -1,4 +1,4 @@
-```markdown
+```
 # AWS EC2: Elastic Compute Cloud - Your Virtual Servers in the Cloud
 
 ## 1. Introduction to AWS EC2
