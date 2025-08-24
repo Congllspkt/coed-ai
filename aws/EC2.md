@@ -1,4 +1,3 @@
-```
 # AWS EC2: Elastic Compute Cloud - Your Virtual Servers in the Cloud
 
 ## 1. Introduction to AWS EC2
@@ -445,4 +444,3 @@ This method is powerful for automation and scripting. You'll need the AWS CLI in
 ## 6. Conclusion
 
 AWS EC2 is a fundamental service that underpins countless cloud solutions. By understanding its core components, pricing models, and best practices, you can effectively provision, manage, and scale your compute resources in the AWS cloud, building robust, flexible, and cost-efficient applications. Whether you prefer the visual guidance of the Management Console or the power of the AWS CLI for automation, EC2 provides the foundation for your cloud journey.
-```
